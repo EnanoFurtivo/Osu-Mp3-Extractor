@@ -10,9 +10,9 @@ using System.Windows.Forms;
 
 namespace Osu_Mp3_Extractor
 {
-    public partial class Form1 : Form
+    public partial class Folders : Form
     {
-        public Form1()
+        public Folders()
         {
             InitializeComponent();
         }
