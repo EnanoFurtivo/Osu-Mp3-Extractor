@@ -17,32 +17,32 @@ namespace Osu_Mp3_Extractor
         public Folders()
         {
             InitializeComponent();
-            outputPath = "";
-            songsPath = "";
+            OutputPath = "";
+            SongsPath = "";
         }
-        public Folders(string OutputPath, string SongsPath)
+        public Folders(string outputPath, string songsPath)
         {
             InitializeComponent();
-            outputPath = OutputPath;
-            songsPath = SongsPath;
+            OutputPath = outputPath;
+            SongsPath = songsPath;
         }
 
         // Window Button Triggers//
         private void browseButton_Click(object sender, EventArgs e)
         {
             using (FrequentlyUsed fused = new FrequentlyUsed())
-                outputPath = fused.seekFolder();
-            if (outputPath != "")
-                outputfolderTextBox.Text = outputPath;
+                OutputPath = fused.seekFolder();
+            if (OutputPath != "")
+                outputfolderTextBox.Text = OutputPath;
             else
                 outputfolderTextBox.Text = @"C:\...\Mp3output";
         }
         private void browseButton1_Click(object sender, EventArgs e)
         {
             using (FrequentlyUsed fused = new FrequentlyUsed())
-               songsPath = fused.seekFolder();
-            if (songsPath != "")
-                songsfolderTextBox.Text = songsPath;
+               SongsPath = fused.seekFolder();
+            if (SongsPath != "")
+                songsfolderTextBox.Text = SongsPath;
             else
                 songsfolderTextBox.Text = @"C:\...\osu!\Songs";
         }
@@ -56,18 +56,18 @@ namespace Osu_Mp3_Extractor
         {
             string param = @"osu\!\\Songs$";
             Regex r1 = new Regex(param, RegexOptions.IgnoreCase);
-            Match m1 = r1.Match(songsPath);
+            Match m1 = r1.Match(SongsPath);
 
-            if (songsPath == "" && outputPath == "")
+            if (SongsPath == "" && OutputPath == "")
             {
                 e.Cancel = true;
                 MessageBox.Show("Please select both output and songs folder", "", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-            }else if (songsPath == "" && outputPath != "")
+            }else if (SongsPath == "" && OutputPath != "")
             {
                 e.Cancel = true;
                 MessageBox.Show("Please select a songs folder", "", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
             }
-            else if (outputPath == "" && songsPath != "")
+            else if (OutputPath == "" && SongsPath != "")
             {
                 e.Cancel = true;
                 MessageBox.Show("Please select an output folder", "", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
@@ -77,7 +77,7 @@ namespace Osu_Mp3_Extractor
                 e.Cancel = true;
                 MessageBox.Show("Please select a valid osu!/songs folder", "", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
             }
-            else if (outputPath == songsPath)
+            else if (OutputPath == SongsPath)
             {
                 e.Cancel = true;
                 MessageBox.Show("Please select a different output folder", "", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
@@ -85,10 +85,10 @@ namespace Osu_Mp3_Extractor
         }
         private void Folders_Load(object sender, EventArgs e)
         {
-            if (outputPath != "" && songsPath != "")
+            if (OutputPath != "" && SongsPath != "")
             {
-                outputfolderTextBox.Text = outputPath;
-                songsfolderTextBox.Text = songsPath;
+                outputfolderTextBox.Text = OutputPath;
+                songsfolderTextBox.Text = SongsPath;
             }
             else
             {
@@ -98,7 +98,7 @@ namespace Osu_Mp3_Extractor
         }
 
         //get; set//
-        public string outputPath { get; set; }
-        public string songsPath { get; set; }
+        public string OutputPath { get; set; }
+        public string SongsPath { get; set; }
     }
 }

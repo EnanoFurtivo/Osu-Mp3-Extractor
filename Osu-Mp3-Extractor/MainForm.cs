@@ -18,37 +18,20 @@ namespace Osu_Mp3_Extractor
             InitializeComponent();
         }
 
-        //Definitions//
-        List<Song> songs = new List<Song>();
-
-        string outputPath = "";
-        string songsPath = "";
-        string searchString = "";
+        
 
         //Startup//
         private void MainForm_Load(object sender, EventArgs e)
         {
-            //chequear en txt
-            if (outputPath != "" && songsPath != "")
-            {
-
-            }
-            else
-            {
-                Folders folders = new Folders();
-                folders.ShowDialog();
-                songsPath = folders.songsPath;
-                outputPath = folders.outputPath;
-            }
+            //chequear en txt------------------------
+            //chequear volidez  de outputPathsongpath -------------------
+            FillSongsList();
         }
 
         //Button Triggers//
         private void folderButton_Click(object sender, EventArgs e)
         {
-            Folders folders = new Folders(outputPath, songsPath);
-            folders.ShowDialog();
-            songsPath = folders.songsPath;
-            outputPath = folders.outputPath;
+            SetFolder();
         }
         private void addButton_Click(object sender, EventArgs e)
         {
@@ -57,6 +40,12 @@ namespace Osu_Mp3_Extractor
         private void extractButton_Click(object sender, EventArgs e)
         {
 
+        }
+
+        //Print Methods//
+        private void PrintSongsList(SongExtract songsext)
+        {
+            searchTextBox.Enabled = true;
         }
     }
 }
