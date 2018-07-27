@@ -35,6 +35,7 @@
             this.songsfolderTextBox = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
+            this.acceptButton = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // browseButton1
@@ -45,6 +46,7 @@
             this.browseButton1.TabIndex = 0;
             this.browseButton1.Text = "Browse...";
             this.browseButton1.UseVisualStyleBackColor = true;
+            this.browseButton1.Click += new System.EventHandler(this.browseButton1_Click);
             // 
             // browseButton
             // 
@@ -54,11 +56,13 @@
             this.browseButton.TabIndex = 1;
             this.browseButton.Text = "Browse...";
             this.browseButton.UseVisualStyleBackColor = true;
+            this.browseButton.Click += new System.EventHandler(this.browseButton_Click);
             // 
             // outputfolderTextBox
             // 
             this.outputfolderTextBox.Location = new System.Drawing.Point(83, 12);
             this.outputfolderTextBox.Name = "outputfolderTextBox";
+            this.outputfolderTextBox.ReadOnly = true;
             this.outputfolderTextBox.Size = new System.Drawing.Size(265, 20);
             this.outputfolderTextBox.TabIndex = 2;
             this.outputfolderTextBox.Text = "C:\\...\\Mp3output";
@@ -67,6 +71,7 @@
             // 
             this.songsfolderTextBox.Location = new System.Drawing.Point(83, 38);
             this.songsfolderTextBox.Name = "songsfolderTextBox";
+            this.songsfolderTextBox.ReadOnly = true;
             this.songsfolderTextBox.Size = new System.Drawing.Size(265, 20);
             this.songsfolderTextBox.TabIndex = 3;
             this.songsfolderTextBox.Text = "C:\\...\\osu!\\Songs";
@@ -89,11 +94,22 @@
             this.label2.TabIndex = 5;
             this.label2.Text = "Songs Folder";
             // 
+            // acceptButton
+            // 
+            this.acceptButton.Location = new System.Drawing.Point(435, 16);
+            this.acceptButton.Name = "acceptButton";
+            this.acceptButton.Size = new System.Drawing.Size(48, 33);
+            this.acceptButton.TabIndex = 6;
+            this.acceptButton.Text = "OK";
+            this.acceptButton.UseVisualStyleBackColor = true;
+            this.acceptButton.Click += new System.EventHandler(this.acceptButton_Click);
+            // 
             // Folders
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(437, 67);
+            this.ClientSize = new System.Drawing.Size(491, 67);
+            this.Controls.Add(this.acceptButton);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.songsfolderTextBox);
@@ -102,8 +118,11 @@
             this.Controls.Add(this.browseButton1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.MaximizeBox = false;
             this.Name = "Folders";
             this.Text = "Directories";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Folders_FormClosing);
+            this.Load += new System.EventHandler(this.Folders_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -117,5 +136,6 @@
         private System.Windows.Forms.TextBox songsfolderTextBox;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Button acceptButton;
     }
 }

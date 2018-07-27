@@ -44,11 +44,14 @@
             this.mapcreatorTextBox = new System.Windows.Forms.TextBox();
             this.lengthTextBox = new System.Windows.Forms.TextBox();
             this.addButton = new System.Windows.Forms.Button();
+            this.label5 = new System.Windows.Forms.Label();
+            this.selectedTextBox = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.specsongsPictureBox)).BeginInit();
             this.SuspendLayout();
             // 
             // extractButton
             // 
+            this.extractButton.Enabled = false;
             this.extractButton.Location = new System.Drawing.Point(516, 11);
             this.extractButton.Name = "extractButton";
             this.extractButton.Size = new System.Drawing.Size(300, 21);
@@ -76,6 +79,7 @@
             // 
             // specsongsPictureBox
             // 
+            this.specsongsPictureBox.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.specsongsPictureBox.Location = new System.Drawing.Point(318, 11);
             this.specsongsPictureBox.Name = "specsongsPictureBox";
             this.specsongsPictureBox.Size = new System.Drawing.Size(192, 108);
@@ -88,7 +92,7 @@
             this.folderButton.Name = "folderButton";
             this.folderButton.Size = new System.Drawing.Size(89, 21);
             this.folderButton.TabIndex = 3;
-            this.folderButton.Text = "Set Folders";
+            this.folderButton.Text = "Change Folders";
             this.folderButton.UseVisualStyleBackColor = true;
             this.folderButton.Click += new System.EventHandler(this.folderButton_Click);
             // 
@@ -130,6 +134,7 @@
             // 
             // titleTextBox
             // 
+            this.titleTextBox.Cursor = System.Windows.Forms.Cursors.IBeam;
             this.titleTextBox.Location = new System.Drawing.Point(318, 139);
             this.titleTextBox.Multiline = true;
             this.titleTextBox.Name = "titleTextBox";
@@ -172,6 +177,7 @@
             // 
             // addButton
             // 
+            this.addButton.Enabled = false;
             this.addButton.Location = new System.Drawing.Point(318, 269);
             this.addButton.Name = "addButton";
             this.addButton.Size = new System.Drawing.Size(192, 33);
@@ -180,11 +186,30 @@
             this.addButton.UseVisualStyleBackColor = true;
             this.addButton.Click += new System.EventHandler(this.addButton_Click);
             // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(414, 227);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(49, 13);
+            this.label5.TabIndex = 17;
+            this.label5.Text = "Selected";
+            // 
+            // selectedTextBox
+            // 
+            this.selectedTextBox.Location = new System.Drawing.Point(417, 243);
+            this.selectedTextBox.Name = "selectedTextBox";
+            this.selectedTextBox.ReadOnly = true;
+            this.selectedTextBox.Size = new System.Drawing.Size(93, 20);
+            this.selectedTextBox.TabIndex = 18;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(828, 314);
+            this.Controls.Add(this.selectedTextBox);
+            this.Controls.Add(this.label5);
             this.Controls.Add(this.extractqueueListBox);
             this.Controls.Add(this.addButton);
             this.Controls.Add(this.lengthTextBox);
@@ -205,6 +230,7 @@
             this.MaximizeBox = false;
             this.Name = "MainForm";
             this.Text = "Osu Mp3 Extractor";
+            this.Load += new System.EventHandler(this.MainForm_Load);
             ((System.ComponentModel.ISupportInitialize)(this.specsongsPictureBox)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -227,5 +253,7 @@
         private System.Windows.Forms.TextBox mapcreatorTextBox;
         private System.Windows.Forms.TextBox lengthTextBox;
         private System.Windows.Forms.Button addButton;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.TextBox selectedTextBox;
     }
 }

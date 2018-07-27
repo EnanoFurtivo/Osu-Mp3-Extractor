@@ -18,10 +18,37 @@ namespace Osu_Mp3_Extractor
             InitializeComponent();
         }
 
+        //Definitions//
+        List<Song> songs = new List<Song>();
+
+        string outputPath = "";
+        string songsPath = "";
+        string searchString = "";
+
+        //Startup//
+        private void MainForm_Load(object sender, EventArgs e)
+        {
+            //chequear en txt
+            if (outputPath != "" && songsPath != "")
+            {
+
+            }
+            else
+            {
+                Folders folders = new Folders();
+                folders.ShowDialog();
+                songsPath = folders.songsPath;
+                outputPath = folders.outputPath;
+            }
+        }
+
         //Button Triggers//
         private void folderButton_Click(object sender, EventArgs e)
         {
-
+            Folders folders = new Folders(outputPath, songsPath);
+            folders.ShowDialog();
+            songsPath = folders.songsPath;
+            outputPath = folders.outputPath;
         }
         private void addButton_Click(object sender, EventArgs e)
         {
