@@ -76,6 +76,7 @@
             this.songsListBox.Name = "songsListBox";
             this.songsListBox.Size = new System.Drawing.Size(300, 264);
             this.songsListBox.TabIndex = 0;
+            this.songsListBox.SelectedIndexChanged += new System.EventHandler(this.songsListBox_SelectedIndexChanged);
             // 
             // specsongsPictureBox
             // 
@@ -103,12 +104,15 @@
             this.searchTextBox.Name = "searchTextBox";
             this.searchTextBox.Size = new System.Drawing.Size(205, 20);
             this.searchTextBox.TabIndex = 4;
-            this.searchTextBox.Text = "Serach by title or artist";
+            this.searchTextBox.Text = "Serach by title, artist or Map creator";
+            this.searchTextBox.TextChanged += new System.EventHandler(this.searchTextBox_TextChanged);
+            this.searchTextBox.Enter += new System.EventHandler(this.searchTextBox_Enter);
+            this.searchTextBox.Leave += new System.EventHandler(this.searchTextBox_Leave);
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(315, 188);
+            this.label1.Location = new System.Drawing.Point(315, 175);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(30, 13);
             this.label1.TabIndex = 6;
@@ -117,7 +121,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(414, 188);
+            this.label2.Location = new System.Drawing.Point(414, 175);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(65, 13);
             this.label2.TabIndex = 7;
@@ -139,8 +143,9 @@
             this.titleTextBox.Multiline = true;
             this.titleTextBox.Name = "titleTextBox";
             this.titleTextBox.ReadOnly = true;
-            this.titleTextBox.Size = new System.Drawing.Size(192, 46);
+            this.titleTextBox.Size = new System.Drawing.Size(192, 33);
             this.titleTextBox.TabIndex = 9;
+            this.titleTextBox.Text = "hgjgjgjgjgjgjgjgjgjgjgjgjjgjgjgjgjgjgjgjgjgjggjgjgjgjgjgjgjgjgjgg";
             // 
             // label4
             // 
@@ -153,18 +158,20 @@
             // 
             // artistTextBox
             // 
-            this.artistTextBox.Location = new System.Drawing.Point(318, 204);
+            this.artistTextBox.Location = new System.Drawing.Point(318, 191);
+            this.artistTextBox.Multiline = true;
             this.artistTextBox.Name = "artistTextBox";
             this.artistTextBox.ReadOnly = true;
-            this.artistTextBox.Size = new System.Drawing.Size(93, 20);
+            this.artistTextBox.Size = new System.Drawing.Size(93, 33);
             this.artistTextBox.TabIndex = 11;
             // 
             // mapcreatorTextBox
             // 
-            this.mapcreatorTextBox.Location = new System.Drawing.Point(417, 204);
+            this.mapcreatorTextBox.Location = new System.Drawing.Point(417, 191);
+            this.mapcreatorTextBox.Multiline = true;
             this.mapcreatorTextBox.Name = "mapcreatorTextBox";
             this.mapcreatorTextBox.ReadOnly = true;
-            this.mapcreatorTextBox.Size = new System.Drawing.Size(93, 20);
+            this.mapcreatorTextBox.Size = new System.Drawing.Size(93, 33);
             this.mapcreatorTextBox.TabIndex = 13;
             // 
             // lengthTextBox

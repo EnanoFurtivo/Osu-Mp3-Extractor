@@ -71,7 +71,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Song.cs" />
-    <Compile Include="SongExtract.cs" />
+    <Compile Include="GetSongs.cs" />
     <EmbeddedResource Include="Folders.resx">
       <DependentUpon>Folders.cs</DependentUpon>
     </EmbeddedResource>
