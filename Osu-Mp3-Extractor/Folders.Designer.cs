@@ -121,7 +121,6 @@
             this.MaximizeBox = false;
             this.Name = "Folders";
             this.Text = "Directories";
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Folders_FormClosing);
             this.Load += new System.EventHandler(this.Folders_Load);
             this.ResumeLayout(false);
             this.PerformLayout();

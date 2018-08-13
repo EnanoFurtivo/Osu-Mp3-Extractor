@@ -37,8 +37,6 @@
             this.searchTextBox = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
-            this.titleTextBox = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
             this.artistTextBox = new System.Windows.Forms.TextBox();
             this.mapcreatorTextBox = new System.Windows.Forms.TextBox();
@@ -46,15 +44,22 @@
             this.addButton = new System.Windows.Forms.Button();
             this.label5 = new System.Windows.Forms.Label();
             this.selectedTextBox = new System.Windows.Forms.TextBox();
+            this.clearButton = new System.Windows.Forms.Button();
+            this.addallButton = new System.Windows.Forms.Button();
+            this.progressBar1 = new System.Windows.Forms.ProgressBar();
+            this.label3 = new System.Windows.Forms.Label();
+            this.label6 = new System.Windows.Forms.Label();
+            this.titleTextBox = new System.Windows.Forms.TextBox();
+            this.label7 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.specsongsPictureBox)).BeginInit();
             this.SuspendLayout();
             // 
             // extractButton
             // 
             this.extractButton.Enabled = false;
-            this.extractButton.Location = new System.Drawing.Point(516, 11);
+            this.extractButton.Location = new System.Drawing.Point(713, 11);
             this.extractButton.Name = "extractButton";
-            this.extractButton.Size = new System.Drawing.Size(300, 21);
+            this.extractButton.Size = new System.Drawing.Size(103, 20);
             this.extractButton.TabIndex = 5;
             this.extractButton.Text = "Extract";
             this.extractButton.UseVisualStyleBackColor = true;
@@ -127,34 +132,14 @@
             this.label2.TabIndex = 7;
             this.label2.Text = "Map Creator";
             // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(315, 123);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(27, 13);
-            this.label3.TabIndex = 8;
-            this.label3.Text = "Title";
-            // 
-            // titleTextBox
-            // 
-            this.titleTextBox.Cursor = System.Windows.Forms.Cursors.IBeam;
-            this.titleTextBox.Location = new System.Drawing.Point(318, 139);
-            this.titleTextBox.Multiline = true;
-            this.titleTextBox.Name = "titleTextBox";
-            this.titleTextBox.ReadOnly = true;
-            this.titleTextBox.Size = new System.Drawing.Size(192, 33);
-            this.titleTextBox.TabIndex = 9;
-            this.titleTextBox.Text = "hgjgjgjgjgjgjgjgjgjgjgjgjjgjgjgjgjgjgjgjgjgjggjgjgjgjgjgjgjgjgjgg";
-            // 
             // label4
             // 
             this.label4.AutoSize = true;
             this.label4.Location = new System.Drawing.Point(315, 227);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(40, 13);
+            this.label4.Size = new System.Drawing.Size(89, 13);
             this.label4.TabIndex = 10;
-            this.label4.Text = "Length";
+            this.label4.Text = "Estimated Length";
             // 
             // artistTextBox
             // 
@@ -210,11 +195,85 @@
             this.selectedTextBox.Size = new System.Drawing.Size(93, 20);
             this.selectedTextBox.TabIndex = 18;
             // 
+            // clearButton
+            // 
+            this.clearButton.Enabled = false;
+            this.clearButton.Location = new System.Drawing.Point(613, 11);
+            this.clearButton.Name = "clearButton";
+            this.clearButton.Size = new System.Drawing.Size(94, 21);
+            this.clearButton.TabIndex = 19;
+            this.clearButton.Text = "Clear Queue";
+            this.clearButton.UseVisualStyleBackColor = true;
+            this.clearButton.Click += new System.EventHandler(this.clearButton_Click);
+            // 
+            // addallButton
+            // 
+            this.addallButton.Enabled = false;
+            this.addallButton.Location = new System.Drawing.Point(516, 11);
+            this.addallButton.Name = "addallButton";
+            this.addallButton.Size = new System.Drawing.Size(91, 21);
+            this.addallButton.TabIndex = 20;
+            this.addallButton.Text = "Add All";
+            this.addallButton.UseVisualStyleBackColor = true;
+            this.addallButton.Click += new System.EventHandler(this.addallButton_Click);
+            // 
+            // progressBar1
+            // 
+            this.progressBar1.Enabled = false;
+            this.progressBar1.Location = new System.Drawing.Point(516, 12);
+            this.progressBar1.Name = "progressBar1";
+            this.progressBar1.Size = new System.Drawing.Size(300, 23);
+            this.progressBar1.Step = 1;
+            this.progressBar1.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
+            this.progressBar1.TabIndex = 21;
+            this.progressBar1.Visible = false;
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(315, 122);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(27, 13);
+            this.label3.TabIndex = 24;
+            this.label3.Text = "Title";
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(335, 142);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(0, 13);
+            this.label6.TabIndex = 25;
+            // 
+            // titleTextBox
+            // 
+            this.titleTextBox.Cursor = System.Windows.Forms.Cursors.IBeam;
+            this.titleTextBox.Location = new System.Drawing.Point(318, 139);
+            this.titleTextBox.Multiline = true;
+            this.titleTextBox.Name = "titleTextBox";
+            this.titleTextBox.ReadOnly = true;
+            this.titleTextBox.Size = new System.Drawing.Size(192, 33);
+            this.titleTextBox.TabIndex = 9;
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(419, 143);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(0, 13);
+            this.label7.TabIndex = 26;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(828, 314);
+            this.Controls.Add(this.label7);
+            this.Controls.Add(this.label6);
+            this.Controls.Add(this.progressBar1);
+            this.Controls.Add(this.label3);
+            this.Controls.Add(this.addallButton);
+            this.Controls.Add(this.clearButton);
             this.Controls.Add(this.selectedTextBox);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.extractqueueListBox);
@@ -224,7 +283,6 @@
             this.Controls.Add(this.artistTextBox);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.titleTextBox);
-            this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.extractButton);
@@ -253,8 +311,6 @@
         private System.Windows.Forms.TextBox searchTextBox;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.TextBox titleTextBox;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.TextBox artistTextBox;
         private System.Windows.Forms.TextBox mapcreatorTextBox;
@@ -262,5 +318,12 @@
         private System.Windows.Forms.Button addButton;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.TextBox selectedTextBox;
+        private System.Windows.Forms.Button clearButton;
+        private System.Windows.Forms.Button addallButton;
+        private System.Windows.Forms.ProgressBar progressBar1;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.TextBox titleTextBox;
+        private System.Windows.Forms.Label label7;
     }
 }

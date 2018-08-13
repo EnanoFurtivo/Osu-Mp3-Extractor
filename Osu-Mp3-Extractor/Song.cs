@@ -9,7 +9,7 @@ namespace Osu_Mp3_Extractor
     public class Song
     {
         //Constructors//
-        public Song(string folderpath, string foldername, string mp3path, string mp3name, string diffpath, string title, string artist, string creator, int code)
+        public Song(string folderpath, string foldername, string mp3path, string mp3name, string diffpath, string title, string artist, string creator, string imagename, string imagepath, int code)
         {
             FolderPath = folderpath;
             FolderName = foldername;
@@ -20,6 +20,8 @@ namespace Osu_Mp3_Extractor
             Artist = artist;
             Creator = creator;
             Selected = false;
+            ImageName = imagename;
+            ImagePath = imagepath;
             Code = code;
         }
 
@@ -33,6 +35,8 @@ namespace Osu_Mp3_Extractor
         public string Artist { get; set; }
         public string Creator { get; set; }
         public bool Selected { get; set; }
+        public string ImageName { get; set; }
+        public string ImagePath { get; set; }
         public int Code { get; set; }
     }
 }

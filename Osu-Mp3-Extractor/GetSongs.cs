@@ -19,6 +19,7 @@ namespace Osu_Mp3_Extractor
         private string titleparam = @"Title\:(.*)";
         private string artistparam = @"Artist\:(.*)";
         private string creatorparam = @"Creator\:(.*)";
+        private string imageparam = @"([0,9]+\,[0,9]+)\,\""([^\""]+)\"".*";
 
         //Constructors//
         public GetSongs(string songsPath)
@@ -32,8 +33,6 @@ namespace Osu_Mp3_Extractor
             int code = 0;
             foreach (string subfolder in Directory.GetDirectories(songsPath))
             {
-                bool exitwhile = false;
-
                 string diffpath = "";
                 string foldername = "";
                 string folderpath = "";
@@ -42,6 +41,8 @@ namespace Osu_Mp3_Extractor
                 string title = "";
                 string artist = "";
                 string creator = "";
+                string imagepath = "";
+                string imagename = "";
 
                 if (subfolder != "")
                 {
@@ -72,14 +73,14 @@ namespace Osu_Mp3_Extractor
 
                         if (diffpath != "")
                         {
-                            ///mp3name, mp3path, title, artist, creator///
+                            /// mp3name, mp3path, title, artist, creator ///
                             int lineNumber = 0;
                             string[] lines = System.IO.File.ReadAllLines(diffpath); //takes .osu file and transform into an array of strings
-                            while (!exitwhile)
+                            foreach (string line in lines)
                             {
                                 string text1 = lines[lineNumber];
 
-                                //mp3name, mp3path
+                                /// mp3name, mp3path ///
                                 Regex r1 = new Regex(mp3nameparam, RegexOptions.IgnoreCase);
                                 Match m1 = r1.Match(text1);
                                 if (m1.Success)
@@ -88,7 +89,7 @@ namespace Osu_Mp3_Extractor
                                     mp3path = subfolder + "\\" + mp3name;   //mp3path
                                 }
 
-                                //title
+                                /// title ///
                                 Regex r2 = new Regex(titleparam, RegexOptions.IgnoreCase);
                                 Match m2 = r2.Match(text1);
                                 if (m2.Success)
@@ -96,7 +97,7 @@ namespace Osu_Mp3_Extractor
                                     title = m2.Groups[1].Value; //title
                                 }
 
-                                //artist
+                                /// artist ///
                                 Regex r3 = new Regex(artistparam, RegexOptions.IgnoreCase);
                                 Match m3 = r3.Match(text1);
                                 if (m3.Success)
@@ -104,26 +105,35 @@ namespace Osu_Mp3_Extractor
                                     artist = m3.Groups[1].Value;    //artist
                                 }
 
-                                //creator
+                                /// creator ///
                                 Regex r4 = new Regex(creatorparam, RegexOptions.IgnoreCase);
                                 Match m4 = r4.Match(text1);
                                 if (m4.Success)
                                 {
                                     creator = m4.Groups[1].Value; //creator
-                                    exitwhile = true;
                                 }
 
-                                // exit while //
+                                /// imagepath ///
+                                Regex r5 = new Regex(imageparam, RegexOptions.IgnoreCase);
+                                Match m5 = r5.Match(text1);
+                                if (m5.Success)
+                                {
+                                    imagename = m5.Groups[2].Value;
+                                    imagepath = subfolder + "\\" + imagename;   //imagepath
+                                    break;
+                                }
+
+                                /// exit while ///
                                 if (text1 == "[TimingPoints]")
                                 {
-                                    exitwhile = true;
+                                    break;
                                 }
                                 lineNumber++;
                             } //filters out the variables using regex on each line
                             
                             if (mp3path != "" && mp3name != "" && title != "" && artist != "" && creator != "")
                             {
-                                Song song = new Song(folderpath, foldername, mp3path, mp3name, diffpath, title, artist, creator, code);
+                                Song song = new Song(folderpath, foldername, mp3path, mp3name, diffpath, title, artist, creator, imagename, imagepath, code);
                                 songsList.Add(song);
                                 code++;
                             }/// Create Object///
