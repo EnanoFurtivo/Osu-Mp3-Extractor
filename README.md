@@ -16,6 +16,8 @@ https://github.com/EnanoFurtivo/Osu-Mp3-Extractor/raw/master/Release.rar
 Have in mind that you NEED .net framework since this is C# code. You can find it here:
 https://www.microsoft.com/net/download/dotnet-framework-runtime
 
+Also you'll need any decompresion program like winRar or 7zip to decompress the proyect.
+
 ### Installing
 
 - Just open the Osu-Mp3-Extractor.sln file in visual studio [preferably 2017]
