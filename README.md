@@ -4,7 +4,7 @@ Hi Everyone i was wondering if i could listen to some beats i had inside osu! in
 
 ## Getting Started
 
-If you are here for the simplified .exe version you can download it here:
+If you are here for the simplified release version in .exe format you can download it here:
 https://github.com/EnanoFurtivo/Osu-Mp3-Extractor/raw/master/Release.rar
 
 - Just extract the folder and run the program.
