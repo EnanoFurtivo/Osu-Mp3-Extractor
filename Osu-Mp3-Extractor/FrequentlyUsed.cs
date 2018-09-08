@@ -23,7 +23,7 @@ namespace Osu_Mp3_Extractor
 
         }//Clean up unmanaged resources in case users of your library don't call 'Dispose'.
 
-        //Basic//
+        //Methods//
         public string seekFolder()
         {
             FolderBrowserDialog search = new FolderBrowserDialog();

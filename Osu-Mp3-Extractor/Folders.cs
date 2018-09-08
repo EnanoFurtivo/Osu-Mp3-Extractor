@@ -50,7 +50,7 @@ namespace Osu_Mp3_Extractor
             }
         }
 
-        // Window Button Triggers//
+        //Window Button Triggers//
         private void browseButton_Click(object sender, EventArgs e)
         {
             using (FrequentlyUsed fused = new FrequentlyUsed())
@@ -117,7 +117,7 @@ namespace Osu_Mp3_Extractor
             }
         }
 
-        //get; set//
+        //get; set;//
         public string OutputPath { get; set; }
         public string SongsPath { get; set; }
         public bool Abort { get; set; }

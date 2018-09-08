@@ -143,7 +143,7 @@ namespace Osu_Mp3_Extractor
             }/// subfolder ///
         }
 
-        //Get; Set
+        //Get; Set;
         public IList<Song> SongsList { get { return songsList; } }
     }
 }
