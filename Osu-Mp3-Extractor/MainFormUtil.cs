@@ -23,7 +23,7 @@ namespace Osu_Mp3_Extractor
         private string outputPath = "";
         private string songsPath = "";
         private int selectedIndex = 0;
-        private int extractions = 1;
+        private int extractions = 0;
         private List<Song> SongsFiltered;
         private List<Song> SongsExtract;
         private GetSongs songsext;
@@ -77,7 +77,6 @@ namespace Osu_Mp3_Extractor
         }
         private void ExtractSongs()
         {
-            int i = 1;
             progressBar1.Visible = true;
             progressBar1.Maximum = songsext.SongsList.Count();
 
@@ -86,8 +85,8 @@ namespace Osu_Mp3_Extractor
                 if (songn.Selected == true)
                 {
                     //Copy the mp3
-                    string mp3CopyPath = outputPath + "\\" + extractions.ToString() + "- " + songn.Mp3Name;
                     extractions++;
+                    string mp3CopyPath = outputPath + "\\" + extractions.ToString() + "- " + songn.Mp3Name;
                     System.IO.File.Copy(songn.Mp3Path, mp3CopyPath, true);
 
                     //Create Song Object
@@ -122,13 +121,19 @@ namespace Osu_Mp3_Extractor
                     //Save the mp3
                     file.Save();
                     ms.Close();
-                    i++;
 
                     //increment progressbar
                     progressBar1.PerformStep();
                 }
             }
             progressBar1.Visible = false;
+            System.IO.File.Delete(txtPath);
+            using (StreamWriter sw = System.IO.File.CreateText(txtPath))
+            {
+                sw.WriteLine("OutputPath=" + outputPath);
+                sw.WriteLine("SongsPath=" + songsPath);
+                sw.WriteLine("Extracts=" + extractions);
+            }
         }
         private void Check()
         {
