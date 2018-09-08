@@ -9,7 +9,7 @@ https://github.com/EnanoFurtivo/Osu-Mp3-Extractor/raw/master/Release.rar
 
 - Just extract the Release folder and run the program.
 
-- make sure you have installed .NET framework. If you dont have it you can find it over on Prerequisites below.
+- Make sure you have installed .NET framework. If you dont have it you can find it over on Prerequisites below.
 
 ### Prerequisites
 
