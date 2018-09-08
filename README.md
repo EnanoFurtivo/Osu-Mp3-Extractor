@@ -4,7 +4,12 @@ Hi Everyone i was wondering if i could listen to some beats i had inside osu! in
 
 ## Getting Started
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
+If you are here for the simplified .exe version you can download it here:
+https://github.com/EnanoFurtivo/Osu-Mp3-Extractor/raw/master/Release.rar
+
+- Just extract the folder and run the program.
+
+- Remember to install .NET framework if you dont have it you can find it over on Prerequisites below.
 
 ### Prerequisites
 
