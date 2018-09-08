@@ -28,8 +28,8 @@ Also you'll need any decompresion program like winRar or 7zip to decompress the 
 
 ## Built With
 
-* [VS2017](https://visualstudio.microsoft.com/)
-* [TagLib](https://taglib.org/)
+* [Visual Studio 2017](https://visualstudio.microsoft.com/)
+* [TagLib Library](https://taglib.org/)
 
 ## License
 
