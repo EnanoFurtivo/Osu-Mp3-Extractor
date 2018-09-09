@@ -32,6 +32,18 @@ If your trying to use the full proyect:
 
 - Done!
 
+## Features
+
+- Song Title and artist are embeed into the mp3 files as a Tag so that you can easly find the songs by filtering. Mind you this feature was added using Regular Expresions allowing the program to be easly updated with the Parameters to filter in case peppy decides to change how .osu files formatting works.
+
+- Thumbnails of the osu beatmap are also embeed into the mp3 as a tag so you have those when using a player that supports it.
+
+- You can filter songs by Title, Artist, or Map creator inside the program so you dont choose that damn R3MusicBox version. 
+
+- Also the duration of the song is displayed so that you dont choose that damn 15 minute version you had laying arround.
+
+- And if your not sure enough its the beatmap you want in case you have 3 Million versions of the same map, the thumbnail is displayed in real time.
+
 ## Built With
 
 * [Visual Studio 2017](https://visualstudio.microsoft.com/)
