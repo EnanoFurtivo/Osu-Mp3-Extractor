@@ -22,6 +22,7 @@ namespace Osu_Mp3_Extractor
         private string txtPath = "";
         private string outputPath = "";
         private string songsPath = "";
+        private string songsPathOld = "";
         private int selectedIndex = 0;
         private int extractions = 0;
         private List<Song> SongsFiltered;
@@ -235,6 +236,20 @@ namespace Osu_Mp3_Extractor
                     {
                         PrintSongsList();
                         PrintSongDetails();
+
+                        if (songsPathOld != songsPath)
+                        {
+                            SongsExtract = new List<Song>();
+                            foreach (Song song in songsext.SongsList)
+                            {
+                                songsext.SongsList[song.Code].Selected = false;
+                            }
+                            PrintExtractList();
+                            PrintSongDetails();
+                            extractButton.Enabled = false;
+                            clearButton.Enabled = false;
+                            addallButton.Enabled = true;
+                        }
                     }
                 }
             }

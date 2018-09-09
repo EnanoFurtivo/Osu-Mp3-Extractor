@@ -34,6 +34,7 @@ namespace Osu_Mp3_Extractor
         //Button Triggers//
         private void folderButton_Click(object sender, EventArgs e)
         {
+            songsPathOld = songsPath;
             band = true;
             SetFolder();
             Check();
