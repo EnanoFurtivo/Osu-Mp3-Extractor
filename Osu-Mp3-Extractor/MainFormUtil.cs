@@ -7,6 +7,7 @@ using System.Windows.Forms;
 using System.Text.RegularExpressions;
 using System.Drawing;
 using System.IO;
+using System.ComponentModel;
 
 namespace Osu_Mp3_Extractor
 {
@@ -29,6 +30,7 @@ namespace Osu_Mp3_Extractor
         private List<Song> SongsFiltered;
         private List<Song> SongsExtract;
         private GetSongs songsext;
+        private BackgroundWorker backgroundWorker1;
 
         //Methods//
         private void FillSongsFilteredList(string searchString)
@@ -77,12 +79,8 @@ namespace Osu_Mp3_Extractor
             else
                 this.Close();
         }
-        private void ExtractSongs()
+        private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
         {
-            //show the progress bar
-            progressBar1.Visible = true;
-            progressBar1.Maximum = songsext.SongsList.Count();
-
             //Create Cover Object
             TagLib.Picture pic = new TagLib.Picture();
             pic.Type = TagLib.PictureType.FrontCover;
@@ -104,7 +102,7 @@ namespace Osu_Mp3_Extractor
                     //Applying the modifications
                     file.Tag.Title = songn.Title;                                                    //title
                     file.Tag.AlbumArtists = songn.Artist.Split(new char[] { ';' });                 //Artist
-                    file.Tag.Album = "osu!";
+                    file.Tag.Album = "osu!";                                                       //Album
 
                     //Applying the cover
                     if (songn.ImagePath != "" && System.IO.File.Exists(songn.ImagePath))
@@ -113,7 +111,7 @@ namespace Osu_Mp3_Extractor
                     }
                     else
                     {
-                        if(System.IO.File.Exists(imgPath))
+                        if (System.IO.File.Exists(imgPath))
                         {
                             pic.Data = TagLib.ByteVector.FromPath(imgPath);
                         }
@@ -123,17 +121,24 @@ namespace Osu_Mp3_Extractor
                             pic.Data = TagLib.ByteVector.FromPath(imgPath);
                         }
                     }
-
                     file.Tag.Pictures = new TagLib.IPicture[] { pic };
 
                     //Save the mp3
                     file.Save();
 
-                    //increment progressbar
-                    progressBar1.PerformStep();
+                    //Update Prograss Bar
+                    backgroundWorker1.ReportProgress(songn.Code);
                 }
             }
-
+        }
+        private void backgroundWorker1_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+            PrintSongDetails(e.ProgressPercentage);
+            progressBar1.PerformStep();
+        }
+        private void backgroundWorker1_RunWorkerCompleted(object sender, System.ComponentModel.RunWorkerCompletedEventArgs e)
+        {
+            //Finishes the process
             progressBar1.Visible = false;
             System.IO.File.Delete(txtPath);
             using (StreamWriter sw = System.IO.File.CreateText(txtPath))
@@ -142,6 +147,14 @@ namespace Osu_Mp3_Extractor
                 sw.WriteLine("SongsPath=" + songsPath);
                 sw.WriteLine("Extracts=" + extractions);
             }
+
+            addallButton.Enabled = true;
+            clearButton.Enabled = true;
+            addButton.Enabled = true;
+            folderButton.Enabled = true;
+            searchTextBox.Enabled = true;
+            songsListBox.Enabled = true;
+            extractqueueListBox.Enabled = true;
         }
         private void Check()
         {

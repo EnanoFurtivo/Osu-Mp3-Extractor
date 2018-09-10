@@ -20,8 +20,14 @@ namespace Osu_Mp3_Extractor
         public MainForm()
         {
             InitializeComponent();
+            
+            backgroundWorker1 = new BackgroundWorker();
+            backgroundWorker1.DoWork += backgroundWorker1_DoWork;
+            backgroundWorker1.ProgressChanged += backgroundWorker1_ProgressChanged;
+            backgroundWorker1.RunWorkerCompleted += backgroundWorker1_RunWorkerCompleted;
+            backgroundWorker1.WorkerReportsProgress = true;
         }
-        
+
         //Startup//
         private void MainForm_Load(object sender, EventArgs e)
         {
@@ -80,7 +86,21 @@ namespace Osu_Mp3_Extractor
         {
             if (MessageBox.Show("Are you sure you want to exctract all of the songs within the selection?" + Environment.NewLine + Environment.NewLine + "This cannont be undone", "Confirm", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
             {
-                ExtractSongs();
+                //show the progress bar
+                progressBar1.Visible = true;
+                progressBar1.Maximum = songsext.SongsList.Count();
+
+                //hides the buttons
+                addallButton.Enabled = false;
+                clearButton.Enabled = false;
+                addButton.Enabled = false;
+                folderButton.Enabled = false;
+                searchTextBox.Enabled = false;
+                songsListBox.Enabled = false;
+                extractqueueListBox.Enabled = false;
+
+                //Extracts songs on background
+                backgroundWorker1.RunWorkerAsync();
             }
         }
         private void clearButton_Click(object sender, EventArgs e)
