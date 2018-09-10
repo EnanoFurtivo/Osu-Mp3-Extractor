@@ -20,6 +20,7 @@ namespace Osu_Mp3_Extractor
         private bool band = false;
         private string appPath = "";
         private string txtPath = "";
+        private string imgPath = "";
         private string outputPath = "";
         private string songsPath = "";
         private string songsPathOld = "";
@@ -78,8 +79,15 @@ namespace Osu_Mp3_Extractor
         }
         private void ExtractSongs()
         {
+            //show the progress bar
             progressBar1.Visible = true;
             progressBar1.Maximum = songsext.SongsList.Count();
+
+            //Create Cover Object
+            TagLib.Picture pic = new TagLib.Picture();
+            pic.Type = TagLib.PictureType.FrontCover;
+            pic.Description = "Cover";
+            pic.MimeType = System.Net.Mime.MediaTypeNames.Image.Jpeg;
 
             foreach (Song songn in songsext.SongsList)
             {
@@ -94,39 +102,38 @@ namespace Osu_Mp3_Extractor
                     var file = TagLib.File.Create(mp3CopyPath);
 
                     //Applying the modifications
-                    file.Tag.Title = songn.Title;                                           //title
-                    file.Tag.AlbumArtists = songn.Artist.Split(new char[] { ';' });         //Artist
-                    file.Tag.Album = "osu!";                                                //album
+                    file.Tag.Title = songn.Title;                                                    //title
+                    file.Tag.AlbumArtists = songn.Artist.Split(new char[] { ';' });                 //Artist
+                    file.Tag.Album = "osu!";
 
-                    //apply thumbnail
-                    TagLib.Picture pic = new TagLib.Picture();
-                    pic.Type = TagLib.PictureType.FrontCover;
-                    pic.Description = "Cover";
-                    pic.MimeType = System.Net.Mime.MediaTypeNames.Image.Jpeg;
-                    MemoryStream ms = new MemoryStream();
-                    using (FrequentlyUsed fused = new FrequentlyUsed())
+                    //Applying the cover
+                    if (songn.ImagePath != "" && System.IO.File.Exists(songn.ImagePath))
                     {
-                        if (songn.ImagePath != "" && System.IO.File.Exists(songn.ImagePath))
+                        pic.Data = TagLib.ByteVector.FromPath(songn.ImagePath);
+                    }
+                    else
+                    {
+                        if(System.IO.File.Exists(imgPath))
                         {
-                            fused.ResizeImage(songn.ImagePath).Save(ms, System.Drawing.Imaging.ImageFormat.Jpeg);
+                            pic.Data = TagLib.ByteVector.FromPath(imgPath);
                         }
                         else
                         {
-                            fused.ResizeImage(Resources.Defaultsongthumbnail).Save(ms, System.Drawing.Imaging.ImageFormat.Jpeg);
+                            Resources.Defaultsongthumbnail.Save(imgPath, System.Drawing.Imaging.ImageFormat.Png);
+                            pic.Data = TagLib.ByteVector.FromPath(imgPath);
                         }
                     }
-                    ms.Position = 0;
-                    pic.Data = TagLib.ByteVector.FromStream(ms);
+
                     file.Tag.Pictures = new TagLib.IPicture[] { pic };
 
                     //Save the mp3
                     file.Save();
-                    ms.Close();
 
                     //increment progressbar
                     progressBar1.PerformStep();
                 }
             }
+
             progressBar1.Visible = false;
             System.IO.File.Delete(txtPath);
             using (StreamWriter sw = System.IO.File.CreateText(txtPath))

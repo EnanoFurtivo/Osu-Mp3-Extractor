@@ -28,6 +28,7 @@ namespace Osu_Mp3_Extractor
             string[] spstring = Application.ExecutablePath.Split(new string[] { "\\Osu-Mp3-Extractor.exe" }, StringSplitOptions.None);
             appPath = spstring[0];
             txtPath = appPath + @"\" + "SongExtractorLog.ini";
+            imgPath = appPath + @"\" + "DefaultImg.png";
             Check();
         }
         
