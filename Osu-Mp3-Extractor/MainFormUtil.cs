@@ -155,6 +155,10 @@ namespace Osu_Mp3_Extractor
             searchTextBox.Enabled = true;
             songsListBox.Enabled = true;
             extractqueueListBox.Enabled = true;
+
+            MessageBox.Show("All songs have been extracted succesfully", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            
+            PrintSongDetails();
         }
         private void Check()
         {
