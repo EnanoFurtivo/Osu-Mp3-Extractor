@@ -71,7 +71,7 @@ namespace Osu_Mp3_Extractor
         }
         private void acceptButton_Click(object sender, EventArgs e)
         {
-            string param = @"osu\!\\Songs$";
+            string param = @"\\Songs$";
             Regex r1 = new Regex(param, RegexOptions.IgnoreCase);
             Match m1 = r1.Match(SongsPath);
 
@@ -93,7 +93,7 @@ namespace Osu_Mp3_Extractor
             }
             else if (!m1.Success)
             {
-                MessageBox.Show("Please select a valid osu!/songs folder", "Alert", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                MessageBox.Show("Please select a valid Songs folder", "Alert", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
             }
             else
             {

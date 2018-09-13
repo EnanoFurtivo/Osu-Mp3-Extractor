@@ -218,8 +218,8 @@ namespace Osu_Mp3_Extractor
                     txterror = false;
                     SetFolder();
                 }
-
-                string param = @"osu\!\\Songs$";
+                
+                string param = @"\\Songs$"; //fix??
                 Regex r4 = new Regex(param, RegexOptions.IgnoreCase);
                 Match m4 = r4.Match(songsPath);
 
@@ -245,7 +245,7 @@ namespace Osu_Mp3_Extractor
                 }
                 else if (!m4.Success)
                 {
-                    MessageBox.Show("Please select a valid osu!/songs folder", "Alert", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    MessageBox.Show("Please select a valid songs folder", "Alert", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                     SetFolder();
                 }
                 else
