@@ -136,7 +136,17 @@ namespace Osu_Mp3_Extractor
                 addallButton.Enabled = false;
             }
         }
-
+        private void notifyIcon1_Click(object sender, EventArgs e)
+        {
+            Show();
+            this.WindowState = FormWindowState.Normal;
+            notifyIcon1.Visible = false;
+        }
+        private void hideButton_Click(object sender, EventArgs e)
+        {
+            Hide();
+            notifyIcon1.Visible = true;
+        }
         //Form Events//
         private void songsListBox_SelectedIndexChanged(object sender, EventArgs e)
         {

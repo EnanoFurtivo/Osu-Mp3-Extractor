@@ -51,7 +51,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Directories.cs" />
     <Compile Include="MainFormUtil.cs">
       <SubType>Form</SubType>
     </Compile>
