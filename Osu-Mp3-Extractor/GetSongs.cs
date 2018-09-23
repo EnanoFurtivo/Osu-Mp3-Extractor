@@ -12,6 +12,7 @@ namespace Osu_Mp3_Extractor
     class GetSongs
     {
         private readonly List<Song> songsList = new List<Song>();
+        private List<Song> songsListTemp = new List<Song>();
 
         //RegexParameters//
         private string osuparam = @".*\.osu";
@@ -144,6 +145,6 @@ namespace Osu_Mp3_Extractor
         }
 
         //Get; Set;
-        public IList<Song> SongsList { get { return songsList; } }
+        public List<Song> SongsList { get { return songsList; } }
     }
 }

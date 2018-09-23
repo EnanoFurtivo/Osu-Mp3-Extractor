@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,8 +7,36 @@ using System.Threading.Tasks;
 
 namespace Osu_Mp3_Extractor
 {
-    public class Song
+    public class Song : IComparable
     {
+        //IComparer Implementation
+        private class sortSongsAlphabetDescendingHelper : IComparer
+        {
+            public int Compare(object a, object b)
+            {
+                Song s1 = (Song)a;
+                Song s2 = (Song)b;
+                if (s1.Title.CompareTo(s2.Title) > 0)
+                {
+                    return -1;
+                }
+                if (s1.Title.CompareTo(s2.Title) < 0)
+                {
+                    return 1;
+                }
+                return 0;
+            }
+        }
+        public static IComparer sortSongsAlphabetDescending()
+        {
+            return (IComparer) new sortSongsAlphabetDescendingHelper();
+        }
+        int IComparable.CompareTo(object obj)
+        {
+            Song s = (Song)obj;
+            return String.Compare(this.Title, s.Title);
+        }
+
         //Constructors//
         public Song(string folderpath, string foldername, string mp3path, string mp3name, string diffpath, string title, string artist, string creator, string imagename, string imagepath, int code)
         {

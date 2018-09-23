@@ -26,9 +26,11 @@ namespace Osu_Mp3_Extractor
         private string songsPath = "";
         private string songsPathOld = "";
         private int selectedIndex = 0;
+        private int selectedValue = 0;
         private int extractions = 0;
         private List<Song> SongsFiltered;
         private List<Song> SongsExtract;
+        private List<Song> songsextSorted;
         private GetSongs songsext;
         private BackgroundWorker backgroundWorker1;
 
@@ -86,14 +88,30 @@ namespace Osu_Mp3_Extractor
             pic.Type = TagLib.PictureType.FrontCover;
             pic.Description = "Cover";
             pic.MimeType = System.Net.Mime.MediaTypeNames.Image.Jpeg;
+            string oldMp3ValidName = "";
+            int i = 1;
+            string mp3CopyPath = "";
 
-            foreach (Song songn in songsext.SongsList)
+            foreach (Song songn in songsextSorted)
             {
                 if (songn.Selected == true)
                 {
+                    //Correct the song name
+                    string mp3validname = songCharReplace(songn.Title, songn.Artist);
+
                     //Copy the mp3
                     extractions++;
-                    string mp3CopyPath = outputPath + "\\" + extractions.ToString() + "- " + songn.Mp3Name;
+                    if (mp3validname == oldMp3ValidName)
+                    {
+                        mp3CopyPath = outputPath + "\\" + mp3validname + " (" + i + ")" + ".mp3";
+                        i++;
+                    }
+                    else
+                    {
+                        mp3CopyPath = outputPath + "\\" + mp3validname + ".mp3";
+                    }
+
+                    oldMp3ValidName = mp3validname;
                     System.IO.File.Copy(songn.Mp3Path, mp3CopyPath, true);
 
                     //Create Song Object
@@ -159,6 +177,33 @@ namespace Osu_Mp3_Extractor
             MessageBox.Show("All songs have been extracted succesfully", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
             
             PrintSongDetails();
+        }
+        private string songCharReplace(string title, string artist)
+        {
+            string songTitletemp = title;
+            string songArtisttemp = artist;
+            
+            var t1 = songTitletemp.Replace('/', '-');
+            var t2 = t1.Replace('\\', '-');
+            var t3 = t2.Replace(':', ' ');
+            var t4 = t3.Replace('*', ' ');
+            var t5 = t4.Replace('?', ' ');
+            var t6 = t5.Replace('"', '-');
+            var t7 = t6.Replace('<', '[');
+            var t8 = t7.Replace('>', ']');
+            var t9 = t8.Replace('|', '-');
+
+            var a1 = songArtisttemp.Replace('/', '-');
+            var a2 = a1.Replace('\\', '-');
+            var a3 = a2.Replace(':', ' ');
+            var a4 = a3.Replace('*', ' ');
+            var a5 = a4.Replace('?', ' ');
+            var a6 = a5.Replace('"', '-');
+            var a7 = a6.Replace('<', '[');
+            var a8 = a7.Replace('>', ']');
+            var a9 = a8.Replace('|', '-');
+
+            return t9 + " - " + a9;
         }
         private void Check()
         {
@@ -251,6 +296,9 @@ namespace Osu_Mp3_Extractor
                 else
                 {
                     songsext = new GetSongs(songsPath);
+                    songsextSorted = new List<Song>(songsext.SongsList);
+                    songsextSorted.Sort();
+
                     if (songsext.SongsList.Count == 0)
                     {
                         MessageBox.Show("The program was unable to find any Songs inside the provided folder: " + songsPath + Environment.NewLine + Environment.NewLine + "Please select a valid songs folder or add some songs to your osu game if its empty", "Unexpected Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
@@ -260,6 +308,7 @@ namespace Osu_Mp3_Extractor
                     {
                         PrintSongsList();
                         PrintSongDetails();
+                        getSelectedValue();
 
                         if (songsPathOld != songsPath)
                         {
@@ -270,6 +319,7 @@ namespace Osu_Mp3_Extractor
                             }
                             PrintExtractList();
                             PrintSongDetails();
+                            getSelectedValue();
                             extractButton.Enabled = false;
                             clearButton.Enabled = false;
                             addallButton.Enabled = true;
@@ -286,6 +336,14 @@ namespace Osu_Mp3_Extractor
                     sw.WriteLine("Extracts=");
                 }
                 SetFolder();
+            }
+        }
+        private void getSelectedValue()
+        {
+            string text = songsListBox.SelectedValue.ToString();
+            if (text != "Osu_Mp3_Extractor.Song")
+            {
+                selectedValue = Int32.Parse(text);
             }
         }
     }

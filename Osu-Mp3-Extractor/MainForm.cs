@@ -48,7 +48,7 @@ namespace Osu_Mp3_Extractor
         }
         private void addButton_Click(object sender, EventArgs e)
         {
-            SongsExtract = new List<Song>();
+            /*SongsExtract = new List<Song>();
             foreach (Song song in songsext.SongsList)
             {
                 if (song.Code == selectedIndex && song.Selected == true)
@@ -67,6 +67,40 @@ namespace Osu_Mp3_Extractor
                     selectedTextBox.Text = "Yes";
                     addButton.Text = "Remove From extract queue";
                     SongsExtract.Add(songsext.SongsList[selectedIndex]);
+                }
+            }
+
+            if (SongsExtract.Count() != 0)
+            {
+                extractButton.Enabled = true;
+                clearButton.Enabled = true;
+            }
+            else
+            {
+                extractButton.Enabled = false;
+                clearButton.Enabled = false;
+            }
+            PrintExtractList();*/
+
+            SongsExtract = new List<Song>();
+            foreach (Song song in songsext.SongsList)
+            {
+                if (song.Code == selectedValue && song.Selected == true)
+                {
+                    songsext.SongsList[song.Code].Selected = false;
+                    selectedTextBox.Text = "No";
+                    addButton.Text = "Add to extract queue";
+                }//elimina la seleccion
+                else if (song.Code == selectedValue && song.Selected == false)
+                {
+                    songsext.SongsList[song.Code].Selected = true;
+                    selectedTextBox.Text = "Yes";
+                    addButton.Text = "Remove From extract queue";
+                    SongsExtract.Add(songsext.SongsList[song.Code]);
+                }//añade a la seleccion
+                else if (song.Code != selectedValue && song.Selected == true)
+                {
+                    SongsExtract.Add(songsext.SongsList[song.Code]);
                 }
             }
 
@@ -147,15 +181,17 @@ namespace Osu_Mp3_Extractor
             Hide();
             notifyIcon1.Visible = true;
         }
+
         //Form Events//
         private void songsListBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            string text = songsListBox.SelectedValue.ToString();
-            if (text != "Osu_Mp3_Extractor.Song")
-            {
-                selectedIndex = Int32.Parse(text);
-            }
+            getSelectedValue();
+            selectedIndex = songsListBox.SelectedIndex;
             PrintSongDetails();
+        }
+        private void extractqueueListBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
         }
         private void searchTextBox_TextChanged(object sender, EventArgs e)
         {
@@ -178,13 +214,14 @@ namespace Osu_Mp3_Extractor
         //Print Methods//
         private void PrintExtractList()
         {
+            SongsExtract.Sort();
             extractqueueListBox.DataSource = SongsExtract;
             extractqueueListBox.DisplayMember = "Title";
             extractqueueListBox.ValueMember = "Code";
         }
         private void PrintSongsList()
         {
-            songsListBox.DataSource = songsext.SongsList;
+            songsListBox.DataSource = songsextSorted;
             songsListBox.DisplayMember = "Title";
             songsListBox.ValueMember = "Code";
             searchTextBox.Enabled = true;
@@ -192,6 +229,7 @@ namespace Osu_Mp3_Extractor
         }
         private void PrintSongsFilteredList()
         {
+            SongsFiltered.Sort();
             songsListBox.DataSource = SongsFiltered;
             songsListBox.DisplayMember = "Title";
             songsListBox.ValueMember = "Code";
@@ -200,11 +238,11 @@ namespace Osu_Mp3_Extractor
         private void PrintSongDetails()
         {
             //title, artist, creator
-            titleTextBox.Text = songsext.SongsList[selectedIndex].Title;
-            artistTextBox.Text = songsext.SongsList[selectedIndex].Artist;
-            mapcreatorTextBox.Text = songsext.SongsList[selectedIndex].Creator;
+            titleTextBox.Text = songsext.SongsList[selectedValue].Title;
+            artistTextBox.Text = songsext.SongsList[selectedValue].Artist;
+            mapcreatorTextBox.Text = songsext.SongsList[selectedValue].Creator;
             //selected
-            if (songsext.SongsList[selectedIndex].Selected)
+            if (songsext.SongsList[selectedValue].Selected)
             {
                 selectedTextBox.Text = "Yes";
                 addButton.Text = "Remove From extract queue";
@@ -217,7 +255,7 @@ namespace Osu_Mp3_Extractor
                 addButton.Enabled = true;
             }
             //length
-            TagLib.File f = TagLib.File.Create(songsext.SongsList[selectedIndex].Mp3Path, TagLib.ReadStyle.Average);
+            TagLib.File f = TagLib.File.Create(songsext.SongsList[selectedValue].Mp3Path, TagLib.ReadStyle.Average);
             var t = (int)f.Properties.Duration.TotalSeconds;
             int minutes = t / 60;
             int seconds = t % 60;
@@ -226,8 +264,8 @@ namespace Osu_Mp3_Extractor
             //thumbnail
             using (FrequentlyUsed fused = new FrequentlyUsed())
             {
-                if (System.IO.File.Exists(songsext.SongsList[selectedIndex].ImagePath))
-                    specsongsPictureBox.Image = fused.ResizeImage(songsext.SongsList[selectedIndex].ImagePath, 192, 108);
+                if (System.IO.File.Exists(songsext.SongsList[selectedValue].ImagePath))
+                    specsongsPictureBox.Image = fused.ResizeImage(songsext.SongsList[selectedValue].ImagePath, 192, 108);
                 else
                     specsongsPictureBox.Image = fused.ResizeImage(Resources.Defaultsongthumbnail, 192, 108);
             }

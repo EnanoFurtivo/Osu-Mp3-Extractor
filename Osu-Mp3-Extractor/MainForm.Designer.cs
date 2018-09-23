@@ -76,6 +76,7 @@
             this.extractqueueListBox.SelectionMode = System.Windows.Forms.SelectionMode.None;
             this.extractqueueListBox.Size = new System.Drawing.Size(300, 238);
             this.extractqueueListBox.TabIndex = 16;
+            this.extractqueueListBox.SelectedIndexChanged += new System.EventHandler(this.extractqueueListBox_SelectedIndexChanged);
             // 
             // songsListBox
             // 
