@@ -54,15 +54,16 @@
             this.label7 = new System.Windows.Forms.Label();
             this.notifyIcon1 = new System.Windows.Forms.NotifyIcon(this.components);
             this.hideButton = new System.Windows.Forms.Button();
+            this.progressBar2 = new System.Windows.Forms.ProgressBar();
             ((System.ComponentModel.ISupportInitialize)(this.specsongsPictureBox)).BeginInit();
             this.SuspendLayout();
             // 
             // extractButton
             // 
             this.extractButton.Enabled = false;
-            this.extractButton.Location = new System.Drawing.Point(516, 38);
+            this.extractButton.Location = new System.Drawing.Point(713, 11);
             this.extractButton.Name = "extractButton";
-            this.extractButton.Size = new System.Drawing.Size(300, 20);
+            this.extractButton.Size = new System.Drawing.Size(103, 20);
             this.extractButton.TabIndex = 5;
             this.extractButton.Text = "Extract";
             this.extractButton.UseVisualStyleBackColor = true;
@@ -71,12 +72,12 @@
             // extractqueueListBox
             // 
             this.extractqueueListBox.FormattingEnabled = true;
-            this.extractqueueListBox.Location = new System.Drawing.Point(516, 64);
+            this.extractqueueListBox.Location = new System.Drawing.Point(516, 38);
             this.extractqueueListBox.Name = "extractqueueListBox";
-            this.extractqueueListBox.SelectionMode = System.Windows.Forms.SelectionMode.None;
-            this.extractqueueListBox.Size = new System.Drawing.Size(300, 238);
+            this.extractqueueListBox.Size = new System.Drawing.Size(300, 264);
             this.extractqueueListBox.TabIndex = 16;
             this.extractqueueListBox.SelectedIndexChanged += new System.EventHandler(this.extractqueueListBox_SelectedIndexChanged);
+            this.extractqueueListBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.extractqueueListBox_KeyPress);
             // 
             // songsListBox
             // 
@@ -86,6 +87,7 @@
             this.songsListBox.Size = new System.Drawing.Size(300, 264);
             this.songsListBox.TabIndex = 0;
             this.songsListBox.SelectedIndexChanged += new System.EventHandler(this.songsListBox_SelectedIndexChanged);
+            this.songsListBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.songsListBox_KeyPress);
             // 
             // specsongsPictureBox
             // 
@@ -224,7 +226,7 @@
             // progressBar1
             // 
             this.progressBar1.Enabled = false;
-            this.progressBar1.Location = new System.Drawing.Point(516, 38);
+            this.progressBar1.Location = new System.Drawing.Point(516, 10);
             this.progressBar1.Name = "progressBar1";
             this.progressBar1.Size = new System.Drawing.Size(300, 21);
             this.progressBar1.Step = 1;
@@ -275,19 +277,33 @@
             // 
             // hideButton
             // 
-            this.hideButton.Location = new System.Drawing.Point(713, 11);
+            this.hideButton.Enabled = false;
+            this.hideButton.Location = new System.Drawing.Point(362, 56);
             this.hideButton.Name = "hideButton";
             this.hideButton.Size = new System.Drawing.Size(103, 21);
             this.hideButton.TabIndex = 27;
             this.hideButton.Text = "Hide";
             this.hideButton.UseVisualStyleBackColor = true;
+            this.hideButton.Visible = false;
             this.hideButton.Click += new System.EventHandler(this.hideButton_Click);
+            // 
+            // progressBar2
+            // 
+            this.progressBar2.Enabled = false;
+            this.progressBar2.Location = new System.Drawing.Point(12, 11);
+            this.progressBar2.Name = "progressBar2";
+            this.progressBar2.Size = new System.Drawing.Size(300, 21);
+            this.progressBar2.Step = 1;
+            this.progressBar2.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
+            this.progressBar2.TabIndex = 28;
+            this.progressBar2.Visible = false;
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(828, 314);
+            this.Controls.Add(this.progressBar2);
             this.Controls.Add(this.hideButton);
             this.Controls.Add(this.label7);
             this.Controls.Add(this.label6);
@@ -348,5 +364,6 @@
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.NotifyIcon notifyIcon1;
         private System.Windows.Forms.Button hideButton;
+        private System.Windows.Forms.ProgressBar progressBar2;
     }
 }
