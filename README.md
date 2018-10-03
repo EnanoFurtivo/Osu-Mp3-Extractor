@@ -47,6 +47,7 @@ If your trying to use the full proyect:
 ## Built With
 
 * [Visual Studio 2017](https://visualstudio.microsoft.com/)
+* [Osu Database Reader](https://github.com/HoLLy-HaCKeR/osu-database-reader)
 * [TagLib Library](https://taglib.org/)
 
 ## License
