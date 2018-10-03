@@ -74,7 +74,7 @@
             this.songsfolderTextBox.ReadOnly = true;
             this.songsfolderTextBox.Size = new System.Drawing.Size(265, 20);
             this.songsfolderTextBox.TabIndex = 3;
-            this.songsfolderTextBox.Text = "C:\\...\\osu!\\Songs";
+            this.songsfolderTextBox.Text = "C:\\...\\osu!";
             // 
             // label1
             // 

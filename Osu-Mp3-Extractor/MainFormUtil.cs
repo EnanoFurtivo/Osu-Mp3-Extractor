@@ -8,124 +8,287 @@ using System.Text.RegularExpressions;
 using System.Drawing;
 using System.IO;
 using System.ComponentModel;
+using osu_database_reader.BinaryFiles;
+using osu_database_reader.Components.Beatmaps;
 
 namespace Osu_Mp3_Extractor
 {
     public partial class MainForm
     {
-        //Definitions//
+        #region Definitions
+        private string imageparam = @"([0,9]+\,[0,9]+)\,\""([^\""]+)\"".*";
         private string outputparam = @"OutputPath\=(.*)";
-        private string songsparam = @"SongsPath\=(.*)";
+        private string songsparam = @"OsuPath\=(.*)";
         private string extractparam = @"Extracts\=(.*)";
-        private bool txterror = false;
-        private bool band = false;
-        private bool band2 = true;
-        private bool band3 = true;
+        private bool fromChangeFolder = false;
+        private bool fromFilteredList = false;
+        private bool lastListSelected = false; //false = list | true = extractlist
+        private bool bounce = false;
+        private bool newTxt = false;
         private string appPath = "";
         private string txtPath = "";
         private string imgPath = "";
         private string outputPath = "";
         private string songsPath = "";
-        private string songsPathOld = "";
+        private string osuPath = "";
+        private string collectionDb = "";
+        private string osuDb = "";
         private int selectedValue = 0;
         private int selectedIndex = 0;
         private int selectedIndexExt = 0;
         private int selectedValueExt = 0;
         private int extractions = 0;
-        private List<Song> SongsFiltered;
-        private List<Song> SongsExtract;
-        private List<Song> songsextSorted;
-        private GetSongs songsext;
+        private List<Song> songsFiltered = new List<Song>();
+        private List<Song> songsModify = new List<Song>();
+        private List<Song> songsFromCollectionModify = new List<Song>();
+        private List<Song> currentlyDisplayed = new List<Song>();
+        private List<Song> currentlyDisplayedTmp = new List<Song>();
+        private List<Song> songsForExtraction = new List<Song>();
+        private List<Song> songsForExtractionEmpty = new List<Song>();
+        private GetSongs songs;
+        private GetSongs songsFromCollection;
         private BackgroundWorker backgroundWorker1;
+        private CollectionDb cdb;
+        #endregion
 
-        //Methods//
-        private void FillSongsFilteredList(string searchString)
-        {
-            SongsFiltered = new List<Song>();
-            foreach (Song song in songsext.SongsList)
-            {
-                Regex r1 = new Regex(Regex.Escape(searchString), RegexOptions.IgnoreCase);
-                Match m1 = r1.Match(song.Title);
-                Regex r2 = new Regex(Regex.Escape(searchString), RegexOptions.IgnoreCase);
-                Match m2 = r2.Match(song.Artist);
-                Regex r3 = new Regex(Regex.Escape(searchString), RegexOptions.IgnoreCase);
-                Match m3 = r3.Match(song.Creator);
-                if (m1.Success)
-                {
-                    SongsFiltered.Add(songsext.SongsList[song.Code]);
-                }
-                else if (m2.Success)
-                {
-                    SongsFiltered.Add(songsext.SongsList[song.Code]);
-                }
-                else if (m3.Success)
-                {
-                    SongsFiltered.Add(songsext.SongsList[song.Code]);
-                }
-            }
-            PrintSongsFilteredList();
-        }
+        #region Methods
         private void SetFolder()
         {
-            Folders folders = new Folders(outputPath, songsPath, txtPath, extractions);
+            if (System.IO.File.Exists(txtPath))
+            {
+                checkTxt();
+                openFolderForm();
+            }
+            else
+            {
+                CreateSettings();
+                openFolderForm();
+            }
+        } //fixed
+        private void openFolderForm()
+        {
+            Folders folders = new Folders(outputPath, osuPath, txtPath, extractions, fromChangeFolder, newTxt);
             folders.ShowDialog();
             if (!folders.Abort)
             {
+                osuPath = folders.OsuPath;
                 songsPath = folders.SongsPath;
                 outputPath = folders.OutputPath;
-                Check();
+                collectionDb = folders.CollectionDb;
+                osuDb = folders.OsuDb;
+                newTxt = false;
             }
-            else if (folders.Abort && band == true)
+            else if (fromChangeFolder)
             {
-                songsPath = folders.SongsPath;
-                outputPath = folders.OutputPath;
-                band = false;
-                Check();
+                fromChangeFolder = false;
             }
             else
                 this.Close();
-        }
+        } //fixed
+
+        private void FillSongsFilteredList(List<Song> songstmp, string searchString)
+        {
+            List<int> usedCodes = new List<int>();
+            songsFiltered = new List<Song>();
+            bool band = true;
+
+            foreach (Song song in songstmp)
+            {
+                band = true;
+
+                foreach (int code in usedCodes)
+                {
+                    if (code == song.Code)
+                    {
+                        band = false;
+                    }
+                }
+
+                if (band)
+                {
+                    Regex r1 = new Regex(Regex.Escape(searchString), RegexOptions.IgnoreCase);
+                    Match m1 = r1.Match(song.Title);
+                    if (m1.Success)
+                    {
+                        songsFiltered.Add(songs.SongsList[song.Code]);
+                        usedCodes.Add(song.Code);
+                    }
+                }
+            }
+            foreach (Song song in songstmp)
+            {
+                band = true;
+
+                foreach (int code in usedCodes)
+                {
+                    if (code == song.Code)
+                    {
+                        band = false;
+                    }
+                }
+
+                if (band)
+                {
+                    Regex r2 = new Regex(Regex.Escape(searchString), RegexOptions.IgnoreCase);
+                    Match m2 = r2.Match(song.Artist);
+                    if (m2.Success)
+                    {
+                        songsFiltered.Add(songs.SongsList[song.Code]);
+                        usedCodes.Add(song.Code);
+                    }
+                }
+            }
+            foreach (Song song in songstmp)
+            {
+                band = true;
+
+                foreach (int code in usedCodes)
+                {
+                    if (code == song.Code)
+                    {
+                        band = false;
+                    }
+                }
+
+                if (band)
+                {
+                    Regex r3 = new Regex(Regex.Escape(searchString), RegexOptions.IgnoreCase);
+                    Match m3 = r3.Match(song.Creator);
+                    if (m3.Success)
+                    {
+                        songsFiltered.Add(songs.SongsList[song.Code]);
+                        usedCodes.Add(song.Code);
+                    }
+                }
+            }
+        } //fixed
+        private void addOrRemoveSong()
+        {
+            bounce = true;
+            songsForExtraction = new List<Song>();
+            int tmp = selectedValue;
+            int tmpi = selectedIndex;
+            if (lastListSelected)
+            {
+                tmp = selectedValueExt;
+                tmpi = selectedIndexExt;
+            }
+
+            foreach (Song song in songs.SongsList)
+            {
+                if (song.Code == tmp)
+                {
+                    if (!song.Selected)
+                    {
+                        songs.SongsList[song.Code].Selected = true;
+                        selectedTextBox.Text = "Yes";
+                        addButton.Text = "Remove From extract queue";
+                        songsForExtraction.Add(songs.SongsList[song.Code]);
+                    }
+                    else
+                    {
+                        songs.SongsList[song.Code].Selected = false;
+                        selectedTextBox.Text = "No";
+                        addButton.Text = "Add to extract queue";
+                    }
+                }else if (song.Selected)
+                {
+                    songsForExtraction.Add(songs.SongsList[song.Code]);
+                }
+            }
+
+            if (songsForExtraction.Count() != 0)
+            {
+                extractButton.Enabled = true;
+                clearButton.Enabled = true;
+                PrintExtractList();
+            }
+            else
+            {
+                extractButton.Enabled = false;
+                clearButton.Enabled = false;
+                PrintExtractList();
+            }
+
+            if (!lastListSelected)
+            {
+                extractqueueListBox.ClearSelected();
+                songsListBox.Focus();
+                PrintSongDetails(selectedValue, true);
+            }else
+            {
+                if (songsForExtraction.Count == 0)
+                {
+                    songsListBox.Focus();
+                }else if (selectedIndexExt == songsForExtraction.Count)
+                {
+                    extractqueueListBox.SetSelected(selectedIndexExt - 1, true);
+                }
+            }
+            bounce = false;
+        } //fixed
+        
+        private void getSelected()
+        {
+            if (songsListBox.SelectedValue != null)
+            {
+                string text = songsListBox.SelectedValue.ToString();
+                if (text != "Osu_Mp3_Extractor.Song" && text != "")
+                    selectedValue = Int32.Parse(text);
+                selectedIndex = songsListBox.SelectedIndex;
+            }
+        } //Renamed
+        private void getSelectedExt()
+        {
+            if (extractqueueListBox.SelectedValue != null)
+            {
+                string text = extractqueueListBox.SelectedValue.ToString();
+                if (text != "Osu_Mp3_Extractor.Song" && text != "")
+                    selectedValueExt = Int32.Parse(text);
+                selectedIndexExt = extractqueueListBox.SelectedIndex;
+            }
+        } //Renamed
+        
         private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
         {
-            //Create Cover Object
             TagLib.Picture pic = new TagLib.Picture();
             pic.Type = TagLib.PictureType.FrontCover;
             pic.Description = "Cover";
             pic.MimeType = System.Net.Mime.MediaTypeNames.Image.Jpeg;
+
             int i = 0;
             string mp3CopyPath = "";
 
-            foreach (Song songn in songsextSorted)
+            foreach (Song songn in songsForExtraction)
             {
                 if (songn.Selected == true)
                 {
-                    //Correct the song name
+                    //Delete invalid chars of the songs title and artist
                     string mp3validname = songCharReplace(songn.Title, songn.Artist);
 
-                    //Copy the mp3
-                    extractions++;
-
+                    //Copy themp3
                     mp3CopyPath = outputPath + "\\" + mp3validname + ".mp3";
                     while (System.IO.File.Exists(mp3CopyPath))
                     {
                         i++;
                         mp3CopyPath = outputPath + "\\" + mp3validname + " (" + i + ")" + ".mp3";
                     }
-
                     System.IO.File.Copy(songn.Mp3Path, mp3CopyPath, true);
 
                     //Create Song Object
                     var file = TagLib.File.Create(mp3CopyPath);
 
-                    //Applying the modifications
+                    //Applying the tags
                     file.Tag.Title = songn.Title;                                                    //title
                     file.Tag.AlbumArtists = songn.Artist.Split(new char[] { ';' });                 //Artist
                     file.Tag.Album = "osu!";                                                       //Album
 
                     //Applying the cover
-                    if (songn.ImagePath != "" && System.IO.File.Exists(songn.ImagePath))
+                    string ImagePath = GetImage(songn.Code);
+
+                    if (ImagePath != "" && System.IO.File.Exists(ImagePath))
                     {
-                        pic.Data = TagLib.ByteVector.FromPath(songn.ImagePath);
+                        pic.Data = TagLib.ByteVector.FromPath(ImagePath);
                     }
                     else
                     {
@@ -142,18 +305,19 @@ namespace Osu_Mp3_Extractor
                     file.Tag.Pictures = new TagLib.IPicture[] { pic };
 
                     //Save the mp3
+                    extractions++;
                     file.Save();
 
                     //Update Prograss Bar
                     backgroundWorker1.ReportProgress(songn.Code);
                 }
             }
-        }
+        } //fixed
         private void backgroundWorker1_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
-            PrintSongDetailsPC(e.ProgressPercentage);
+            PrintSongDetails(e.ProgressPercentage, false);
             progressBar1.PerformStep();
-        }
+        } //fixed
         private void backgroundWorker1_RunWorkerCompleted(object sender, System.ComponentModel.RunWorkerCompletedEventArgs e)
         {
             //Finishes the process
@@ -162,7 +326,7 @@ namespace Osu_Mp3_Extractor
             using (StreamWriter sw = System.IO.File.CreateText(txtPath))
             {
                 sw.WriteLine("OutputPath=" + outputPath);
-                sw.WriteLine("SongsPath=" + songsPath);
+                sw.WriteLine("OsuPath=" + osuPath);
                 sw.WriteLine("Extracts=" + extractions);
             }
 
@@ -175,14 +339,110 @@ namespace Osu_Mp3_Extractor
             extractqueueListBox.Enabled = true;
 
             MessageBox.Show("All songs have been extracted succesfully", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            
-            PrintSongDetails();
+
+            //PrintSongDetails();
+        }//fixed
+        
+        private void checkTxt()
+        {
+            bool txterror = false;
+            int lineNumber = 0;
+            string[] lines = System.IO.File.ReadAllLines(txtPath);
+            foreach (string line in lines)
+            {
+                string text1 = lines[lineNumber];
+                if (lineNumber == 0)
+                {
+                    Regex r1 = new Regex(outputparam, RegexOptions.IgnoreCase);
+                    Match m1 = r1.Match(text1);
+                    if (m1.Success)
+                    {
+                        outputPath = m1.Groups[1].Value;
+                    }
+                    else
+                        txterror = true;
+                }
+                else if (lineNumber == 1)
+                {
+                    Regex r2 = new Regex(songsparam, RegexOptions.IgnoreCase);
+                    Match m2 = r2.Match(text1);
+                    if (m2.Success)
+                    {
+                        osuPath = m2.Groups[1].Value;
+                    }
+                    else
+                        txterror = true;
+                }
+                else if (lineNumber == 2)
+                {
+                    Regex r3 = new Regex(extractparam, RegexOptions.IgnoreCase);
+                    Match m3 = r3.Match(text1);
+                    if (m3.Success && m3.Groups[1].Value != "")
+                    {
+                        extractions = Int32.Parse(m3.Groups[1].Value);
+                    }
+                    else
+                        txterror = true;
+                }
+                lineNumber++;
+            }       //reads txt
+            if (txterror == true)
+            {
+                ResetSettings();
+                txterror = false;
+            } //check path and set variables
+        } //new
+        private void ResetSettings()
+        {
+            System.IO.File.Delete(txtPath);
+            using (StreamWriter sw = System.IO.File.CreateText(txtPath))
+            {
+                sw.WriteLine("OutputPath=");
+                sw.WriteLine("OsuPath=");
+                sw.WriteLine("Extracts=");
+            }
+        } //new
+        private void CreateSettings()
+        {
+            using (StreamWriter sw = System.IO.File.CreateText(txtPath))
+            {
+                sw.WriteLine("OutputPath=");
+                sw.WriteLine("OsuPath=");
+                sw.WriteLine("Extracts=");
+            }
+            newTxt = true;
+        } //new
+
+        private string GetImage(int code)
+        {
+            string imagepath = "";
+            using (FrequentlyUsed fused = new FrequentlyUsed())
+            {
+                int lineNumber = 0;
+                string[] lines = System.IO.File.ReadAllLines(songs.SongsList[code].DiffPath); //takes .osu file and transform into an array of strings
+                foreach (string line in lines)
+                {
+                    string text1 = lines[lineNumber];
+
+                    /// imagepath ///
+                    Regex r5 = new Regex(imageparam, RegexOptions.IgnoreCase);
+                    Match m5 = r5.Match(text1);
+                    if (m5.Success)
+                    {
+                        string imagename = m5.Groups[2].Value;
+                        imagepath = songs.SongsList[code].FolderPath + "\\" + imagename;   //imagepath
+                        break;
+                    }
+                    lineNumber++;
+                }
+            }//new
+            return imagepath;
         }
         private string songCharReplace(string title, string artist)
         {
             string songTitletemp = title;
             string songArtisttemp = artist;
-            
+
             var t1 = songTitletemp.Replace('/', '-');
             var t2 = t1.Replace('\\', '-');
             var t3 = t2.Replace(':', ' ');
@@ -204,229 +464,7 @@ namespace Osu_Mp3_Extractor
             var a9 = a8.Replace('|', '-');
 
             return t9 + " - " + a9;
-        }
-        private void Check()
-        {
-            if (System.IO.File.Exists(txtPath))
-            {
-                int lineNumber = 0;
-                string[] lines = System.IO.File.ReadAllLines(txtPath); //takes .osu file and transform into an array of strings
-                foreach (string line in lines)
-                {
-                    string text1 = lines[lineNumber];
-                    if (lineNumber == 0)
-                    {
-                        Regex r1 = new Regex(outputparam, RegexOptions.IgnoreCase);
-                        Match m1 = r1.Match(text1);
-                        if (m1.Success)
-                        {
-                            outputPath = m1.Groups[1].Value;
-                        }
-                        else
-                            txterror = true;
-                    }
-                    else if (lineNumber == 1)
-                    {
-                        Regex r2 = new Regex(songsparam, RegexOptions.IgnoreCase);
-                        Match m2 = r2.Match(text1);
-                        if (m2.Success)
-                        {
-                            songsPath = m2.Groups[1].Value;
-                        }
-                        else
-                            txterror = true;
-                    }
-                    else if (lineNumber == 2)
-                    {
-                        Regex r3 = new Regex(extractparam, RegexOptions.IgnoreCase);
-                        Match m3 = r3.Match(text1);
-                        if (m3.Success && m3.Groups[1].Value != "")
-                        {
-                            extractions = Int32.Parse(m3.Groups[1].Value);
-                        }
-                        else
-                            txterror = true;
-                    }
-                    lineNumber++;
-                }
-
-                if (txterror == true)
-                {
-                    MessageBox.Show("Please select both output and songs and make sure they are valid", "Alert", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                    System.IO.File.Delete(txtPath);
-                    using (StreamWriter sw = System.IO.File.CreateText(txtPath))
-                    {
-                        sw.WriteLine("OutputPath=");
-                        sw.WriteLine("SongsPath=");
-                        sw.WriteLine("Extracts=");
-                    }
-                    txterror = false;
-                    SetFolder();
-                }
-                
-                string param = @"\\Songs$";
-                Regex r4 = new Regex(param, RegexOptions.IgnoreCase);
-                Match m4 = r4.Match(songsPath);
-
-                if (songsPath == "" && outputPath == "")
-                {
-                    SetFolder();
-                }
-                else if (songsPath == "" && outputPath != "")
-                {
-                    SetFolder();
-                }
-                else if (outputPath == "" && songsPath != "")
-                {
-                    SetFolder();
-                }
-                else if (outputPath == songsPath)
-                {
-                    SetFolder();
-                }
-                else if (!m4.Success)
-                {
-                    MessageBox.Show("Your songs folder has been deleted or moved" + Environment.NewLine + "Please select a different one", "Unexpected Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    SetFolder();
-                }
-                else
-                {
-                    if (!System.IO.Directory.Exists(outputPath))
-                    {
-                        MessageBox.Show("Your output folder has been deleted or moved" + Environment.NewLine + "Please select a different one", "Unexpected Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        SetFolder();
-                    }else if (!System.IO.Directory.Exists(songsPath))
-                    {
-                        MessageBox.Show("Your osu! folder has been deleted or moved" + Environment.NewLine + "Please select a different one", "Unexpected Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        SetFolder();
-                    }
-                    else
-                    {
-                        songsext = new GetSongs(songsPath);
-                        songsextSorted = new List<Song>(songsext.SongsList);
-                        songsextSorted.Sort();
-
-                        if (songsext.SongsList.Count == 0)
-                        {
-                            MessageBox.Show("The program was unable to find any Songs inside the provided folder: " + songsPath + Environment.NewLine + Environment.NewLine + "Please select a valid songs folder or add some songs to your osu game if its empty", "Unexpected Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                            SetFolder();
-                        }
-                        else
-                        {
-                            PrintSongsList();
-                            PrintSongDetails();
-                            getSelectedValue();
-
-                            if (songsPathOld != songsPath)
-                            {
-                                SongsExtract = new List<Song>();
-                                foreach (Song song in songsext.SongsList)
-                                {
-                                    songsext.SongsList[song.Code].Selected = false;
-                                }
-                                PrintExtractList();
-                                PrintSongDetails();
-                                getSelectedValue();
-                                extractButton.Enabled = false;
-                                clearButton.Enabled = false;
-                                addallButton.Enabled = true;
-                            }
-                        }
-                    }
-                }
-            }
-            else
-            {
-                using (StreamWriter sw = System.IO.File.CreateText(txtPath))
-                {
-                    sw.WriteLine("OutputPath=");
-                    sw.WriteLine("SongsPath=");
-                    sw.WriteLine("Extracts=");
-                }
-                SetFolder();
-            }
-        }
-        private void getSelectedValue()
-        {
-            string text = songsListBox.SelectedValue.ToString();
-            if (text != "Osu_Mp3_Extractor.Song")
-            {
-                selectedValue = Int32.Parse(text);
-            }
-            selectedIndex = songsListBox.SelectedIndex;
-        }
-        private void getSelectedValueExt()
-        {
-            string text = extractqueueListBox.SelectedValue.ToString();
-            if (text != "Osu_Mp3_Extractor.Song")
-            {
-                selectedValueExt = Int32.Parse(text);
-            }
-            selectedIndexExt = extractqueueListBox.SelectedIndex;
-        }
-        private void addOrRemoveSong()
-        {
-            SongsExtract = new List<Song>();
-
-            int tmp = selectedValue;
-            if (band3)
-            {
-                tmp = selectedValueExt;
-            }
-
-            foreach (Song song in songsext.SongsList)
-            {
-                if (song.Code == tmp && song.Selected == true)
-                {
-                    songsext.SongsList[song.Code].Selected = false;
-                    selectedTextBox.Text = "No";
-                    addButton.Text = "Add to extract queue";
-                }//elimina la seleccion
-                else if (song.Code == tmp && song.Selected == false)
-                {
-                    songsext.SongsList[song.Code].Selected = true;
-                    selectedTextBox.Text = "Yes";
-                    addButton.Text = "Remove From extract queue";
-                    SongsExtract.Add(songsext.SongsList[song.Code]);
-                }//añade a la seleccion
-                else if (song.Code != tmp && song.Selected == true)
-                {
-                    SongsExtract.Add(songsext.SongsList[song.Code]);
-                }
-            }
-
-            if (SongsExtract.Count() != 0)
-            {
-                extractButton.Enabled = true;
-                clearButton.Enabled = true;
-            }
-            else
-            {
-                extractButton.Enabled = false;
-                clearButton.Enabled = false;
-                songsListBox.Focus();
-                songsListBox.SetSelected(selectedIndex, true);
-                PrintSongDetails();
-            }
-
-            band2 = true;
-            PrintExtractList();
-
-            if (band3)
-            {
-                if (SongsExtract.Count == selectedIndexExt && SongsExtract.Count >= 1)
-                {
-                    extractqueueListBox.Focus();
-                    extractqueueListBox.SetSelected(selectedIndexExt - 1, true);
-                }
-                else if (SongsExtract.Count >= 1)
-                {
-                    extractqueueListBox.Focus();
-                    extractqueueListBox.SetSelected(selectedIndexExt, true);
-                }
-            }
-            else
-                songsListBox.Focus();
-        }
+        } //No need to change
+        #endregion
     }
 }

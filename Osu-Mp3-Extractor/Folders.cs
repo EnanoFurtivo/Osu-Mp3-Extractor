@@ -16,38 +16,38 @@ namespace Osu_Mp3_Extractor
     {
         private string txtPath = "";
         private int extractions = 0;
-        private GetSongs songsext2;
+        private bool NewTxt = false;
+        private bool FromChangeFolder = false;
+        private GetSongs songsextTest;
 
         //constructors//
-        public Folders()
+        public Folders(string outputPath, string osuPath, string txtPathtemp, int extractionstemp, bool fromChangeFolder, bool newtxt)
         {
             InitializeComponent();
-            OutputPath = "";
-            SongsPath = "";
-        }
-        public Folders(string outputPath, string songsPath, string txtPathtemp, int extractionstemp)
-        {
-            InitializeComponent();
+
             OutputPath = outputPath;
-            SongsPath = songsPath;
+            OsuPath = osuPath;
             txtPath = txtPathtemp;
             extractions = extractionstemp;
+            FromChangeFolder = fromChangeFolder;
+            NewTxt = newtxt;
             Abort = true;
         }
 
         //Startup//
         private void Folders_Load(object sender, EventArgs e)
         {
-            if (OutputPath != "" && SongsPath != "")
+            if (OutputPath != "" && OsuPath != "")
             {
                 outputfolderTextBox.Text = OutputPath;
-                songsfolderTextBox.Text = SongsPath;
+                songsfolderTextBox.Text = OsuPath;
             }
             else
             {
                 outputfolderTextBox.Text = @"C:\...\Mp3output";
-                songsfolderTextBox.Text = @"C:\...\osu!\Songs";
+                songsfolderTextBox.Text = @"C:\...\osu!";
             }
+            check();
         }
 
         //Window Button Triggers//
@@ -59,67 +59,115 @@ namespace Osu_Mp3_Extractor
                 outputfolderTextBox.Text = OutputPath;
             else
                 outputfolderTextBox.Text = @"C:\...\Mp3output";
+            FromChangeFolder = false; 
         }
         private void browseButton1_Click(object sender, EventArgs e)
         {
             using (FrequentlyUsed fused = new FrequentlyUsed())
-               SongsPath = fused.seekFolder();
-            if (SongsPath != "")
-                songsfolderTextBox.Text = SongsPath;
+               OsuPath = fused.seekFolder();
+            if (OsuPath != "")
+                songsfolderTextBox.Text = OsuPath;
             else
-                songsfolderTextBox.Text = @"C:\...\osu!\Songs";
+                songsfolderTextBox.Text = @"C:\...\osu!";
+            FromChangeFolder = false;
         }
         private void acceptButton_Click(object sender, EventArgs e)
         {
-            string param = @"\\Songs$";
-            Regex r1 = new Regex(param, RegexOptions.IgnoreCase);
-            Match m1 = r1.Match(SongsPath);
+            FromChangeFolder = false;
+            check();
+        }
 
-            if (SongsPath == "" && OutputPath == "")
+        //Methods//
+        private void check()
+        {
+            if (!FromChangeFolder)
             {
-                MessageBox.Show("Please select both output and songs folder", "Alert", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-            }
-            else if (SongsPath == "" && OutputPath != "")
-            {
-                MessageBox.Show("Please select a songs folder", "Alert", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-            }
-            else if (OutputPath == "" && SongsPath != "")
-            {
-                MessageBox.Show("Please select an output folder", "Alert", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-            }
-            else if (OutputPath == SongsPath)
-            {
-                MessageBox.Show("Please select a different output folder", "Alert", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-            }
-            else if (!m1.Success)
-            {
-                MessageBox.Show("Please select a valid Songs folder", "Alert", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-            }
-            else
-            {
-                songsext2 = new GetSongs(SongsPath);
-                if (songsext2.SongsList.Count == 0)
+                if (Directory.Exists(OsuPath))
                 {
-                    MessageBox.Show("The program was unable to find any Songs inside the provided folder: " + SongsPath + Environment.NewLine + Environment.NewLine + "Please select a valid songs folder or add some songs to your osu game if its empty", "Unexpected Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    foreach (string subfolder in Directory.GetDirectories(OsuPath))
+                    {
+                        if (subfolder == OsuPath + "\\" + "Songs")
+                        {
+                            SongsPath = subfolder;
+                            foreach (string subfile in Directory.GetFiles(OsuPath))
+                            {
+                                if (subfile == OsuPath + "\\" + "osu!.db")
+                                {
+                                    OsuDb = subfile;
+                                }
+                                else if (subfile == OsuPath + "\\" + "collection.db")
+                                {
+                                    CollectionDb = subfile;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if (CollectionDb != "" || OsuDb != "")
+                {
+                    if (OsuDb != "")
+                    {
+                        if (CollectionDb != "")
+                        {
+                            if (SongsPath != "")
+                            {
+                                if (OsuPath == "" && OutputPath == "")
+                                {
+                                    if (!NewTxt)
+                                    MessageBox.Show("Please select both output and osu! folder", "Unexpected Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                }
+                                else if (OsuPath == "" && OutputPath != "")
+                                {
+                                    MessageBox.Show("Please select a osu! folder", "Unexpected Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                }
+                                else if (OutputPath == "" && OsuPath != "")
+                                {
+                                    MessageBox.Show("Please select an output folder", "Unexpected Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                }
+                                else if (OutputPath == OsuPath)
+                                {
+                                    MessageBox.Show("Please select a different output or osu! folder", "Unexpected Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                }
+                                else
+                                {
+                                    songsextTest = new GetSongs(SongsPath, OsuDb);
+                                    if (songsextTest.SongsList.Count == 0)
+                                        MessageBox.Show("The program was unable to find any Songs inside the provided folder: " + SongsPath + Environment.NewLine + Environment.NewLine + "Please make sure that the folder is correct or add some songs to your osu game if its empty", "Unexpected Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                    else
+                                    {
+                                        System.IO.File.Delete(txtPath);
+                                        using (StreamWriter sw = System.IO.File.CreateText(txtPath))
+                                        {
+                                            sw.WriteLine("OutputPath=" + OutputPath);
+                                            sw.WriteLine("OsuPath=" + OsuPath);
+                                            sw.WriteLine("Extracts=" + extractions);
+                                        }
+                                        Abort = false;
+                                        this.Close();
+                                    }
+                                }
+                            } else
+                                MessageBox.Show("No Songs folder was found inside your osu! folder" + Environment.NewLine + "Please make sure it exists, it is automatically created by osu", "Unexpected Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
+                        else
+                            MessageBox.Show("It seems like your osu is missing this files:" + Environment.NewLine + "collection.db" + Environment.NewLine + Environment.NewLine + "Please make sure it exists, it is automatically created by osu", "Unexpected Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                    else
+                        MessageBox.Show("It seems like your osu is missing this files:" + Environment.NewLine + "osu!.db" + Environment.NewLine + Environment.NewLine + "Please make sure it exists, it is automatically created by osu", "Unexpected Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
                 else
-                {
-                    System.IO.File.Delete(txtPath);
-                    using (StreamWriter sw = System.IO.File.CreateText(txtPath))
-                    {
-                        sw.WriteLine("OutputPath=" + OutputPath);
-                        sw.WriteLine("SongsPath=" + SongsPath);
-                        sw.WriteLine("Extracts=" + extractions);
-                    }
-                    Abort = false;
-                    this.Close();
-                }
+                    MessageBox.Show("It seems like your osu is missing both of these files:" + Environment.NewLine + "collection.db" + Environment.NewLine + "osu.db" + Environment.NewLine + Environment.NewLine + "Please make sure they exist, they are automatically created by osu", "Unexpected Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+            NewTxt = false;
         }
 
         //get; set;//
+        public string OsuDb { get; set; }
+        public string CollectionDb { get; set; }
         public string OutputPath { get; set; }
         public string SongsPath { get; set; }
+        public string OsuPath { get; set; }
         public bool Abort { get; set; }
     }
 }

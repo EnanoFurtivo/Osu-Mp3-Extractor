@@ -38,7 +38,7 @@ namespace Osu_Mp3_Extractor
         }
 
         //Constructors//
-        public Song(string folderpath, string foldername, string mp3path, string mp3name, string diffpath, string title, string artist, string creator, string imagename, string imagepath, int code)
+        public Song(string folderpath, string foldername, string mp3path, string mp3name, string diffpath, string title, string artist, string creator, int length, int code, string hash, int threadid)
         {
             FolderPath = folderpath;
             FolderName = foldername;
@@ -48,10 +48,11 @@ namespace Osu_Mp3_Extractor
             Title = title;
             Artist = artist;
             Creator = creator;
+            Length = length;
             Selected = false;
-            ImageName = imagename;
-            ImagePath = imagepath;
             Code = code;
+            Hash = hash;
+            ThreadId = threadid;
         }
 
         //get; set//
@@ -63,9 +64,10 @@ namespace Osu_Mp3_Extractor
         public string Title { get; set; }
         public string Artist { get; set; }
         public string Creator { get; set; }
+        public int Length { get; set; }
         public bool Selected { get; set; }
-        public string ImageName { get; set; }
-        public string ImagePath { get; set; }
         public int Code { get; set; }
+        public string Hash { get; set; }
+        public int ThreadId { get; set; }
     }
 }
