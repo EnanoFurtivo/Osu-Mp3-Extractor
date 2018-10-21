@@ -160,11 +160,13 @@ namespace Osu_Mp3_Extractor
         private void ExtractSongs(string songsPath, string osuDb, string collectionDb, string collectionName)
         {
             List<int> threadIds = new List<int>();
+            List<int> threadIds2 = new List<int>();
             cdb = CollectionDb.Read(collectionDb);
             odb = OsuDb.Read(osuDb);
             int code = 0;
             int code2 = 0;
             bool band = true;
+            bool band2 = true;
 
             foreach (BeatmapEntry bm in odb.Beatmaps)
             {
@@ -191,8 +193,10 @@ namespace Osu_Mp3_Extractor
                     int length = bm.TotalTime;
                     string hash = bm.BeatmapChecksum;
                     int threadid = bm.ThreadId;
+                    int beatmapsetid = bm.BeatmapSetId;
+                    int beatmapid = bm.BeatmapId;
 
-                    Song song = new Song(folderpath, foldername, mp3path, mp3name, diffpath, title, artist, creator, length, code, hash, threadid);
+                    Song song = new Song(folderpath, foldername, mp3path, mp3name, diffpath, title, artist, creator, length, code, hash, threadid, beatmapsetid, beatmapid);
                     songsListTemp3.Add(song);
                     threadIds.Add(bm.ThreadId);
                     code++;
@@ -215,8 +219,10 @@ namespace Osu_Mp3_Extractor
                     int length = bm.TotalTime;
                     string hash = bm.BeatmapChecksum;
                     int threadid = bm.ThreadId;
+                    int beatmapsetid = bm.BeatmapSetId;
+                    int beatmapid = bm.BeatmapId;
 
-                    Song song = new Song(folderpath, foldername, mp3path, mp3name, diffpath, title, artist, creator, length, code2, hash, threadid);
+                    Song song = new Song(folderpath, foldername, mp3path, mp3name, diffpath, title, artist, creator, length, code2, hash, threadid, beatmapsetid, beatmapid);
                     songsListTemp.Add(song);
                     code2++;
                 }
@@ -236,23 +242,40 @@ namespace Osu_Mp3_Extractor
                                 {
                                     if (song3.ThreadId == song2.ThreadId)
                                     {
-                                        string diffpath = song2.DiffPath;
-                                        string foldername = song2.FolderName;
-                                        string folderpath = song2.FolderPath;
-                                        string mp3name = song2.Mp3Name;
-                                        string mp3path = song2.Mp3Path;
-                                        string title = song2.Title;
-                                        string artist = song2.Artist;
-                                        string creator = song2.Creator;
-                                        int length = song2.Length;
-                                        string hash = song2.Hash;
-                                        int code3 = song2.Code;
-                                        int threadid = song2.ThreadId;
+                                        band2 = true;
 
-                                        Song song = new Song(folderpath, foldername, mp3path, mp3name, diffpath, title, artist, creator, length, code3, hash, threadid);
-                                        songsList.Add(song);
+                                        foreach (int id in threadIds2)
+                                        {
+                                            if (id == song2.ThreadId)
+                                            {
+                                                band2 = false;
+                                            }
+                                        }
+
+                                        if (band2)
+                                        {
+                                            string diffpath = song2.DiffPath;
+                                            string foldername = song2.FolderName;
+                                            string folderpath = song2.FolderPath;
+                                            string mp3name = song2.Mp3Name;
+                                            string mp3path = song2.Mp3Path;
+                                            string title = song2.Title;
+                                            string artist = song2.Artist;
+                                            string creator = song2.Creator;
+                                            int length = song2.Length;
+                                            string hash = song2.Hash;
+                                            int code3 = song2.Code;
+                                            int threadid = song2.ThreadId;
+                                            int beatmapsetid = song2.BeatmapSetId;
+                                            int beatmapid = song2.BeatmapId;
+
+                                            Song song = new Song(folderpath, foldername, mp3path, mp3name, diffpath, title, artist, creator, length, code3, hash, threadid, beatmapsetid, beatmapid);
+                                            songsList.Add(song);
+                                            threadIds2.Add(song2.ThreadId);
+                                        }
                                     }
                                 }
+                                band2 = true;
                             }
                         }
                     }
@@ -291,8 +314,10 @@ namespace Osu_Mp3_Extractor
                     int length = bm.TotalTime;
                     string hash = bm.BeatmapChecksum;
                     int threadid = bm.ThreadId;
+                    int beatmapsetid = bm.BeatmapSetId;
+                    int beatmapid = bm.BeatmapId;
 
-                    Song song = new Song(folderpath, foldername, mp3path, mp3name, diffpath, title, artist, creator, length, code, hash, threadid);
+                    Song song = new Song(folderpath, foldername, mp3path, mp3name, diffpath, title, artist, creator, length, code, hash, threadid, beatmapsetid, beatmapid);
                     songsList.Add(song);
                     threadIds.Add(bm.ThreadId);
                     code++;

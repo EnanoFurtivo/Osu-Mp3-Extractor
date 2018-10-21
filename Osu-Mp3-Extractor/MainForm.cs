@@ -18,7 +18,7 @@ namespace Osu_Mp3_Extractor
 {
     public partial class MainForm : Form
     {
-        //initialize component//
+        //Constructors//
         public MainForm()
         {
             InitializeComponent();
@@ -30,32 +30,144 @@ namespace Osu_Mp3_Extractor
             backgroundWorker1.WorkerReportsProgress = true;
         }
 
-        //Startup//
+        #region Methods
+        //Form Events//
         private void MainForm_Load(object sender, EventArgs e)
         {
             string[] spstring = Application.ExecutablePath.Split(new string[] { "\\Osu-Mp3-Extractor.exe" }, StringSplitOptions.None);
             appPath = spstring[0];  //appPath
             txtPath = appPath + @"\" + "SongExtractorLog.ini"; //txtPath
             imgPath = appPath + @"\" + "DefaultImg.png"; //imgPath
+            txtErrorPath = appPath + @"\" + "ErrorLog.txt";
 
-            comboBox1.Items.Add("Extract from in game collection");
+            comboBox1.Items.Add("Extract from collection");
             comboBox1.Items.Add("Extract by selecting maps");
 
             SetFolder();
             songs = new GetSongs(songsPath, osuDb);
             songsModify = new List<Song>(songs.SongsList);
+
+            //hides the buttons
+            addallButton.Enabled = false;
+            clearButton.Enabled = false;
+            addButton.Enabled = false;
+            optionsButton.Enabled = false;
+            searchTextBox.Enabled = false;
+            songsListBox.Enabled = false;
+            extractqueueListBox.Enabled = false;
+            comboBox2.Enabled = false;
         }
-        
-        //Button Triggers//
-        private void folderButton_Click(object sender, EventArgs e)
+        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
-            fromChangeFolder = true;
-            SetFolder();
-        } //fixed
+            cdb = CollectionDb.Read(collectionDb);
+            comboBox2.Items.Clear();
+            thumbnailOnly = false;
+
+            //hides the buttons
+            addallButton.Enabled = false;
+            clearButton.Enabled = false;
+            addButton.Enabled = false;
+            optionsButton.Enabled = false;
+            searchTextBox.Enabled = false;
+            songsListBox.Enabled = false;
+            extractqueueListBox.Enabled = false;
+            comboBox2.Enabled = false;
+
+            if (comboBox1.GetItemText(comboBox1.SelectedItem) == "Extract from collection")
+            {
+                comboBox2.Enabled = true;
+                foreach (Collection c in cdb.Collections)
+                {
+                    comboBox2.Items.Add(c.Name);
+                }
+            }
+            else if (comboBox1.GetItemText(comboBox1.SelectedItem) == "Extract by selecting maps")
+            {
+                SelectFromOsuDb();
+            }
+        } 
+        private void comboBox2_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (comboBox1.GetItemText(comboBox1.SelectedItem) == "Extract from collection")
+            {
+                if (comboBox2.Text != "Collections")
+                {
+                    SelectFromCollection();
+                }
+                else
+                    MessageBox.Show("Please select a collection", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+            }
+        } 
+        private void searchTextBox_TextChanged(object sender, EventArgs e)
+        {
+            if (searchTextBox.Text != "" && searchTextBox.Text != "Serach by title, artist or Map creator")
+            {
+                fromFilteredList = true;
+                FillSongsFilteredList(currentlyDisplayedTmp, searchTextBox.Text);
+                PrintSongsList(songsFiltered, false);
+            }
+            else
+            {
+                fromFilteredList = false;
+                PrintSongsList(currentlyDisplayed, true);
+            }
+        }
+        private void searchTextBox_Leave(object sender, EventArgs e)
+        {
+            if (searchTextBox.Text == "")
+                searchTextBox.Text = "Serach by title, artist or Map creator";
+        } 
+        private void searchTextBox_Enter(object sender, EventArgs e)
+        {
+            if (searchTextBox.Text == "Serach by title, artist or Map creator")
+                searchTextBox.Text = "";
+        } 
+        private void songsListBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (songsListBox.SelectedValue != null && !bounce)
+            {
+                lastListSelected = false;
+                getSelected();
+                PrintSongDetails(selectedValue, true);
+            }
+        } 
+        private void songsListBox_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar == 13)
+            {
+                addOrRemoveSong();
+            }
+        } 
+        private void extractqueueListBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (extractqueueListBox.SelectedValue != null && !bounce)
+            {
+                lastListSelected = true;
+                getSelectedExt();
+                PrintSongDetails(selectedValueExt, true);
+            }
+        } 
+        private void extractqueueListBox_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar == 13)
+            {
+                addOrRemoveSong();
+            }
+        }
+        private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            System.Diagnostics.Process.Start(linkLabel1.Text);
+        }
+
+        //Button Triggers//
+        private void optionsButton_Click(object sender, EventArgs e)
+        {
+
+        }
         private void addButton_Click(object sender, EventArgs e)
         {
             addOrRemoveSong();
-        } //No need to change
+        }
         private void extractButton_Click(object sender, EventArgs e)
         {
             if (MessageBox.Show("Are you sure you want to exctract all of the songs within the selection?" + Environment.NewLine + Environment.NewLine + "This cannont be undone", "Confirm", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
@@ -68,7 +180,7 @@ namespace Osu_Mp3_Extractor
                 addallButton.Enabled = false;
                 clearButton.Enabled = false;
                 addButton.Enabled = false;
-                folderButton.Enabled = false;
+                optionsButton.Enabled = false;
                 searchTextBox.Enabled = false;
                 songsListBox.Enabled = false;
                 extractqueueListBox.Enabled = false;
@@ -76,7 +188,7 @@ namespace Osu_Mp3_Extractor
                 //Extracts songs on background
                 backgroundWorker1.RunWorkerAsync();
             }
-        } //fixed
+        }
         private void clearButton_Click(object sender, EventArgs e)
         {
             if (MessageBox.Show("Are you sure you want to delete your selection? " + songsForExtraction.Count.ToString() + " Songs" + Environment.NewLine + Environment.NewLine + "This cannont be undone", "Confirm", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
@@ -96,7 +208,7 @@ namespace Osu_Mp3_Extractor
                 songsListBox.Focus();
                 PrintSongDetails(selectedValue, true);
             }
-        } //fixed
+        }
         private void addallButton_Click(object sender, EventArgs e)
         {
             if (MessageBox.Show("Are you sure you want to add all of the songs to the selection? " + currentlyDisplayed.Count.ToString() + " Songs" + Environment.NewLine + Environment.NewLine + "This cannont be undone", "Confirm", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
@@ -116,163 +228,20 @@ namespace Osu_Mp3_Extractor
                 extractButton.Enabled = true;
                 clearButton.Enabled = true;
                 addallButton.Enabled = false;
-                
+
                 extractqueueListBox.ClearSelected();
                 songsListBox.Focus();
                 PrintSongDetails(selectedValue, true);
 
                 bounce = false;
             }
-        } //fixed
+        }
         private void notifyIcon1_Click(object sender, EventArgs e)
         {
             Show();
             this.WindowState = FormWindowState.Normal;
             notifyIcon1.Visible = false;
-        } //No need to change
-        private void hideButton_Click(object sender, EventArgs e)
-        {
-            Hide();
-            notifyIcon1.Visible = true;
-        } //No need to change
-
-        //Form Events//
-        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            cdb = CollectionDb.Read(collectionDb);
-            comboBox2.Items.Clear();
-
-            if (comboBox1.GetItemText(comboBox1.SelectedItem) == "Extract from in game collection")
-            {
-                comboBox2.Enabled = true;
-                foreach (Collection c in cdb.Collections)
-                {
-                    comboBox2.Items.Add(c.Name);
-                }
-
-                //hides the buttons
-                addallButton.Enabled = false;
-                clearButton.Enabled = false;
-                addButton.Enabled = false;
-                folderButton.Enabled = false;
-                searchTextBox.Enabled = false;
-                songsListBox.Enabled = false;
-                extractqueueListBox.Enabled = false;
-            }
-            else if (comboBox1.GetItemText(comboBox1.SelectedItem) == "Extract by selecting maps")
-            {
-                comboBox2.Enabled = false;
-
-                //unhides the buttons
-                addallButton.Enabled = true;
-                clearButton.Enabled = true;
-                addButton.Enabled = true;
-                folderButton.Enabled = true;
-                searchTextBox.Enabled = true;
-                songsListBox.Enabled = true;
-                extractqueueListBox.Enabled = true;
-
-                PrintSongsList(songsModify, true);
-                getSelected();
-                PrintSongDetails(selectedValue, true);
-                PrintExtractList();
-            }
-            else
-            {
-                //hides the buttons
-                addallButton.Enabled = false;
-                clearButton.Enabled = false;
-                addButton.Enabled = false;
-                folderButton.Enabled = false;
-                searchTextBox.Enabled = false;
-                songsListBox.Enabled = false;
-                extractqueueListBox.Enabled = false;
-            }
-        } //fixed
-        private void comboBox2_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (comboBox1.GetItemText(comboBox1.SelectedItem) == "Extract from in game collection")
-            {
-                if (comboBox2.Text != "Collections")
-                {
-                    songsFromCollection = new GetSongs(songsPath, osuDb, collectionDb, comboBox1.GetItemText(comboBox2.SelectedItem));
-                    songsFromCollectionModify = new List<Song>(songsFromCollection.SongsList);
-                    songsFromCollectionModify.Sort();
-                    
-                    //unhides the buttons
-                    addallButton.Enabled = true;
-                    clearButton.Enabled = true;
-                    addButton.Enabled = true;
-                    folderButton.Enabled = true;
-                    searchTextBox.Enabled = true;
-                    songsListBox.Enabled = true;
-                    extractqueueListBox.Enabled = true;
-
-                    PrintSongsList(songsFromCollectionModify, true);
-                    songsListBox.Focus();
-                    getSelected();
-                    PrintSongDetails(selectedValue, true);
-                    PrintExtractList();
-                }
-                else
-                    MessageBox.Show("Please select a collection", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-            }
-        } //fixed
-        
-        private void searchTextBox_TextChanged(object sender, EventArgs e)
-        {
-            if (searchTextBox.Text != "" && searchTextBox.Text != "Serach by title, artist or Map creator")
-            {
-                FillSongsFilteredList(currentlyDisplayedTmp ,searchTextBox.Text);
-                PrintSongsList(songsFiltered, false);
-                fromFilteredList = true;
-            }
-            else
-                PrintSongsList(songsModify, true);
-        } //fixed
-        private void searchTextBox_Leave(object sender, EventArgs e)
-        {
-            if (searchTextBox.Text == "")
-                searchTextBox.Text = "Serach by title, artist or Map creator";
-        } //fixed
-        private void searchTextBox_Enter(object sender, EventArgs e)
-        {
-            if (searchTextBox.Text == "Serach by title, artist or Map creator")
-                searchTextBox.Text = "";
-        } //fixed
-
-        private void songsListBox_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (songsListBox.SelectedValue != null && !bounce)
-            {
-                lastListSelected = false;
-                getSelected();
-                PrintSongDetails(selectedValue, true);
-            }
-        } //fixed
-        private void songsListBox_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            if (e.KeyChar == 13)
-            {
-                addOrRemoveSong();
-            }
-        } //fixed
-        private void extractqueueListBox_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (extractqueueListBox.SelectedValue != null && !bounce)
-            {
-                lastListSelected = true;
-                getSelectedExt();
-                PrintSongDetails(selectedValueExt, true);
-            }
-        } //fixed
-        private void extractqueueListBox_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            if (e.KeyChar == 13)
-            {
-                addOrRemoveSong();
-            }
-        } //fixed
+        }
 
         //Print Methods//
         private void PrintExtractList()
@@ -282,16 +251,23 @@ namespace Osu_Mp3_Extractor
                 songsForExtraction.Sort();
                 extractqueueListBox.DataSource = null;
                 extractqueueListBox.DataSource = songsForExtraction;
-            }else
+                selectedMapsLabels.Text = songsForExtraction.Count.ToString();
+            }
+            else
+            {
                 extractqueueListBox.DataSource = null;
+                selectedMapsLabels.Text = "0";
+            }
             extractqueueListBox.DisplayMember = "Title";
             extractqueueListBox.ValueMember = "Code";
-        } //fixed
+        } 
         private void PrintSongsList(List<Song> songstmp, bool sort)
         {
-            currentlyDisplayed = new List<Song>(songstmp);
             if (!fromFilteredList)
+            {
+                currentlyDisplayed = new List<Song>(songstmp);
                 currentlyDisplayedTmp = new List<Song>(songstmp);
+            }
             if (sort)
                 songstmp.Sort();
 
@@ -302,34 +278,32 @@ namespace Osu_Mp3_Extractor
 
             searchTextBox.Enabled = true;
             addallButton.Enabled = true;
-            fromFilteredList = false;
-        } //fixed
+
+            loadedMapsLabel.Text = songstmp.Count.ToString();
+        } 
         private void PrintSongDetails(int code, bool buttonActive)
         {
             //title, artist, creator
             titleTextBox.Text = songs.SongsList[code].Title;
             artistTextBox.Text = songs.SongsList[code].Artist;
             mapcreatorTextBox.Text = songs.SongsList[code].Creator;
+            //osu mapset link
+            linkLabel1.Text = @"https://osu.ppy.sh/beatmapsets/" + songs.SongsList[code].BeatmapSetId;
             //selected
             if (buttonActive)
             {
                 if (songs.SongsList[code].Selected)
                 {
-                    selectedTextBox.Text = "Yes";
                     addButton.Text = "Remove From extract queue";
                     addButton.Enabled = true;
                 }
                 else
                 {
-                    selectedTextBox.Text = "No";
                     addButton.Text = "Add to extract queue";
                     addButton.Enabled = true;
                 }
             }else
-            {
-                selectedTextBox.Text = "";
                 addButton.Text = "";
-            }
             //length
             var t = songs.SongsList[code].Length;
             string tempmin = "";
@@ -350,8 +324,9 @@ namespace Osu_Mp3_Extractor
             lengthTextBox.Text = tempmin + ":" + tempsec;
 
             //thumbnail
+            if (thumbnailPreview)
             PrintThumbnail(code);
-        } //fixed
+        } 
         private void PrintThumbnail(int code)
         {
             string imagepath = GetImage(code);
@@ -362,6 +337,67 @@ namespace Osu_Mp3_Extractor
                 else
                     specsongsPictureBox.Image = fused.ResizeImage(Resources.Defaultsongthumbnail, 192, 108);
             }
-        } //new
+        }
+
+        //Modes//
+        private void SelectFromCollection()
+        {
+            songsFromCollection = new GetSongs(songsPath, osuDb, collectionDb, comboBox1.GetItemText(comboBox2.SelectedItem));
+            songsFromCollectionModify = new List<Song>(songsFromCollection.SongsList);
+            songsFromCollectionModify.Sort();
+
+            //unhides the buttons
+            addallButton.Enabled = true;
+            clearButton.Enabled = true;
+            addButton.Enabled = true;
+            optionsButton.Enabled = true;
+            searchTextBox.Enabled = true;
+            songsListBox.Enabled = true;
+            extractqueueListBox.Enabled = true;
+
+            PrintSongsList(songsFromCollectionModify, true);
+            songsListBox.Focus();
+            getSelected();
+            PrintSongDetails(selectedValue, true);
+            PrintExtractList();
+        }
+        private void SelectFromOsuDb()
+        {
+            //unhides the buttons
+            addallButton.Enabled = true;
+            clearButton.Enabled = true;
+            addButton.Enabled = true;
+            optionsButton.Enabled = true;
+            searchTextBox.Enabled = true;
+            songsListBox.Enabled = true;
+            extractqueueListBox.Enabled = true;
+
+            PrintSongsList(songsModify, true);
+            getSelected();
+            PrintSongDetails(selectedValue, true);
+            PrintExtractList();
+        }
+        #endregion
+
+        //Dead Code//
+        /*
+        private void folderButton_Click(object sender, EventArgs e)
+        {
+            fromChangeFolder = true;
+            SetFolder();
+        } 
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {
+            if (thumbnailOnly)
+                thumbnailOnly = false;
+            else
+                thumbnailOnly = true;
+        } //working
+        private void hideButton_Click(object sender, EventArgs e)
+        {
+            Hide();
+            notifyIcon1.Visible = true;
+        } 
+        */
     }
 }
