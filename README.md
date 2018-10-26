@@ -1,6 +1,6 @@
 # Osu-Mp3-Extractor
 
-Hi Everyone i was wondering if i could listen to some beats i had inside osu! in my phone, so i started to copy the files straight into it manually. Of course i got away with the awful Unicode Titles ex: (). and artists ex: (). So i made this program in C# wich allows you to select from your entire map collection. The maps you want will be correctly copied and exported with the original title and artist that are written in ASCII.
+Hi Everyone i was wondering if i could listen to some beats i had inside osu! in my phone, so i started to copy the files straight into it manually. So i made this program in C# wich allows you to select from your entire map collection. The maps you want will be correctly copied and exported with the original title and artist that are written in ASCII.
 
 ## Getting Started
 
@@ -34,15 +34,17 @@ If your trying to use the full proyect:
 
 ## Features
 
-- Song Title and artist are embeed into the mp3 files as a Tag so that you can easly find the songs by filtering. Mind you this feature was added using Regular Expresions allowing the program to be easly updated with the Parameters to filter in case peppy decides to change how .osu files formatting works.
+- Song Title and artist are embeed into the mp3 files as a Tag so that you can easly find the songs by filtering.
 
-- Thumbnails of the osu beatmap are also embeed into the mp3 as a tag so you have those when using a player that supports it.
+- Thumbnails of from the beatmaps are also embeed into the mp3 exports so you can more easly recognize your maps when using a player that supports it.
 
-- You can filter songs by Title, Artist, or Map creator inside the program so you dont choose that damn R3MusicBox version. 
+- You can filter songs by Title, Artist, or Map creator inside the program so you can choos map by map or if you so wish from a collection. 
 
 - Also the duration of the song is displayed so that you dont choose that damn 15 minute version you had laying arround.
 
-- And if your not sure enough its the beatmap you want in case you have 3 Million versions of the same map, the thumbnail is displayed in real time.
+- And if your not sure enough its the beatmap you want in case you have 3 Million versions of the same map, the thumbnails are displayed in real time.
+
+- After v2.5 maps wont get duplicated meaning if you export MAP_A, and some other day you want to export MAP_B but also accidentally select MAP_A, MAP_A wont be exported again, only MAP_B.
 
 ## Built With
 
