@@ -420,6 +420,7 @@ namespace Osu_Mp3_Extractor
             getSelected();
             PrintSongDetails(selectedValue, true);
             PrintExtractList(songsForCompleteExtraction);
+            songsListBox.SetSelected(0, true);
         }
         private void CompleteLibrary()
         {
@@ -440,6 +441,7 @@ namespace Osu_Mp3_Extractor
             getSelected();
             PrintSongDetails(selectedValue, true);
             PrintExtractList(songsForCompleteExtraction);
+            songsListBox.SetSelected(0, true);
         }
         #endregion
 
