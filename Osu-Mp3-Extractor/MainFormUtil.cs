@@ -25,12 +25,14 @@ namespace Osu_Mp3_Extractor
         private string outputparam = @"OutputPath\=(.*)";
         private string songsparam = @"OsuPath\=(.*)";
         private string extractparam = @"Extracts\=(.*)";
+        private bool noAdd = false;
         private bool closeApp = false;
         private bool fromChangeFolder = false;
         private bool fromFilteredList = false;
         private bool lastListSelected = false; //false = list | true = extractlist
         private bool bounce = false;
         private bool newTxt = false;
+        private string mode = "";
         private string selectedCollection = "";
         private string txtErrorPath = "";
         private string appPath = "";
@@ -53,6 +55,8 @@ namespace Osu_Mp3_Extractor
         private List<Song> currentlyDisplayed = new List<Song>();
         private List<Song> currentlyDisplayedTmp = new List<Song>();
         private List<Song> songsForExtraction = new List<Song>();
+        private List<Song> songsForCompleteExtraction = new List<Song>();
+        private List<Song> songsForFinalExtraction = new List<Song>();
         private List<Song> songsForExtractionEmpty = new List<Song>();
         private List<String> errorString;
         private GetSongs songs;
@@ -210,7 +214,7 @@ namespace Osu_Mp3_Extractor
                     songsForExtraction.Add(songs.SongsList[song.Code]);
                 }
             }
-            PrintExtractList();
+            PrintExtractList(songsForExtraction);
 
             if (songsForExtraction.Count == 0)
             {
@@ -286,29 +290,33 @@ namespace Osu_Mp3_Extractor
             pic.MimeType = System.Net.Mime.MediaTypeNames.Image.Jpeg;
 
             int i = 0;
-            string mp3CopyPath = "";
+            string subfoldersPath = "";
             errorInt = 0;
             errorString = new List<String>();
+            
+            string collectionvalidname = songCharReplace(selectedCollection);
 
-            foreach (Song songn in songsForExtraction)
+            if (!Directory.Exists(outputPath + "\\" + collectionvalidname))
+            {
+                try
+                {
+                    Directory.CreateDirectory(outputPath + "\\" + collectionvalidname);
+                    subfoldersPath = outputPath + "\\" + collectionvalidname;
+                }
+                catch (Exception)
+                {
+                    MessageBox.Show("Unable to create directory:" + outputPath + "\\" + collectionvalidname + Environment.NewLine + Environment.NewLine + "Instead using:" + outputPath, "Unexpected Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    subfoldersPath = outputPath;
+                }
+            }
+            else
+                subfoldersPath = outputPath + "\\" + collectionvalidname;
+
+            foreach (Song songn in songsForFinalExtraction)
             {
                 //Delete invalid chars of the songs title and artist
                 string mp3validname = songCharReplace(songn.Title, songn.Artist);
-                string collectionvalidname = songCharReplace(songn.Collection);
-                    
-                mp3CopyPath = outputPath + "\\" + mp3validname;
-
-                //change comment for sub folder creation
-                /*if (songn.Collection == "osu!")
-                    mp3CopyPath = outputPath + "\\" + mp3validname;
-                else
-                {
-                    mp3CopyPath = outputPath + "\\" + collectionvalidname + "\\" + mp3validname;
-                    //make sure subdirectory exists
-                    if (!Directory.Exists(outputPath + "\\" + collectionvalidname))
-                        Directory.CreateDirectory(outputPath + "\\" + collectionvalidname);
-                }*/
-
+                string mp3CopyPath = subfoldersPath + "\\" + mp3validname;
                 //Copy the mp3
                 if (File.Exists(songn.Mp3Path))
                 {
@@ -349,8 +357,10 @@ namespace Osu_Mp3_Extractor
                         file.Tag.Title = songn.Title;
                         //file.Tag.AlbumArtists = songn.Artist.Split(new char[] { ';' });
                         file.Tag.Performers = songn.Artist.Split(new char[] { ';' });
-                        //file.Tag.Album = songn.Collection; //not ready for implementation
-                        file.Tag.Album = "osu!";
+                        if (mode == "Extract an entire collection")
+                            file.Tag.Album = selectedCollection;
+                        else
+                            file.Tag.Album = "osu!";
                         file.Tag.Comment = songn.Hash;
 
                         //Applying the cover
@@ -427,7 +437,7 @@ namespace Osu_Mp3_Extractor
             addallButton.Enabled = true;
             clearButton.Enabled = true;
             addButton.Enabled = true;
-            optionsButton.Enabled = true;
+            //optionsButton.Enabled = true;
             searchTextBox.Enabled = true;
             songsListBox.Enabled = true;
             extractqueueListBox.Enabled = true;
