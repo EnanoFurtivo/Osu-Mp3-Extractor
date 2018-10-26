@@ -28,7 +28,7 @@ If your trying to use the full proyect:
 
 - Just open the Osu-Mp3-Extractor.sln file in visual studio [preferably 2017]
 
-- Then include TagLib-sharp library via nuget [or other ways] to the proyect
+- Then include TagLib-sharp and Osu-Database-Reader library's via nuget [or other ways] to the proyect
 
 - Done!
 
