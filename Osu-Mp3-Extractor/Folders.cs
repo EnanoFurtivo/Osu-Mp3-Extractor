@@ -82,7 +82,11 @@ namespace Osu_Mp3_Extractor
         {
             if (!FromChangeFolder)
             {
-                if (Directory.Exists(OsuPath))
+                if (!Directory.Exists(OsuPath))
+                    MessageBox.Show("It seems like your osu folder has been renamed, moved or deleted. Please restore it or select a new one", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                else if (!Directory.Exists(OutputPath))
+                    MessageBox.Show("It seems like your output folder has been renamed, moved or deleted. Please restore it or select a new one", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                else
                 {
                     foreach (string subfolder in Directory.GetDirectories(OsuPath))
                     {
@@ -102,62 +106,62 @@ namespace Osu_Mp3_Extractor
                             }
                         }
                     }
-                }
 
-                if (CollectionDb != "" || OsuDb != "")
-                {
-                    if (OsuDb != "")
+                    if (CollectionDb != "" || OsuDb != "")
                     {
-                        if (CollectionDb != "")
+                        if (OsuDb != "")
                         {
-                            if (SongsPath != "")
+                            if (CollectionDb != "")
                             {
-                                if (OsuPath == "" && OutputPath == "")
+                                if (SongsPath != "")
                                 {
-                                    if (!NewTxt)
-                                    MessageBox.Show("Please select both output and osu! folder", "Unexpected Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                                }
-                                else if (OsuPath == "" && OutputPath != "")
-                                {
-                                    MessageBox.Show("Please select a osu! folder", "Unexpected Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                                }
-                                else if (OutputPath == "" && OsuPath != "")
-                                {
-                                    MessageBox.Show("Please select an output folder", "Unexpected Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                                }
-                                else if (OutputPath == OsuPath)
-                                {
-                                    MessageBox.Show("Please select a different output or osu! folder", "Unexpected Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                                }
-                                else
-                                {
-                                    songsextTest = new GetSongs(SongsPath, OsuDb);
-                                    if (songsextTest.SongsList.Count == 0)
-                                        MessageBox.Show("The program was unable to find any Songs inside the provided folder: " + SongsPath + Environment.NewLine + Environment.NewLine + "Please make sure that the folder is correct or add some songs to your osu game if its empty", "Unexpected Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                    if (OsuPath == "" && OutputPath == "")
+                                    {
+                                        if (!NewTxt)
+                                            MessageBox.Show("Please select both output and osu! folder", "Unexpected Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                    }
+                                    else if (OsuPath == "" && OutputPath != "")
+                                    {
+                                        MessageBox.Show("Please select a osu! folder", "Unexpected Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                    }
+                                    else if (OutputPath == "" && OsuPath != "")
+                                    {
+                                        MessageBox.Show("Please select an output folder", "Unexpected Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                    }
+                                    else if (OutputPath == OsuPath)
+                                    {
+                                        MessageBox.Show("Please select a different output or osu! folder", "Unexpected Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                    }
                                     else
                                     {
-                                        System.IO.File.Delete(txtPath);
-                                        using (StreamWriter sw = System.IO.File.CreateText(txtPath))
+                                        songsextTest = new GetSongs(SongsPath, OsuDb);
+                                        if (songsextTest.SongsList.Count == 0)
+                                            MessageBox.Show("The program was unable to find any Songs inside the provided folder: " + SongsPath + Environment.NewLine + Environment.NewLine + "Please make sure that the folder is correct or add some songs to your osu game if its empty", "Unexpected Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                        else
                                         {
-                                            sw.WriteLine("OutputPath=" + OutputPath);
-                                            sw.WriteLine("OsuPath=" + OsuPath);
-                                            sw.WriteLine("Extracts=" + extractions);
+                                            System.IO.File.Delete(txtPath);
+                                            using (StreamWriter sw = System.IO.File.CreateText(txtPath))
+                                            {
+                                                sw.WriteLine("OutputPath=" + OutputPath);
+                                                sw.WriteLine("OsuPath=" + OsuPath);
+                                                sw.WriteLine("Extracts=" + extractions);
+                                            }
+                                            Abort = false;
+                                            this.Close();
                                         }
-                                        Abort = false;
-                                        this.Close();
                                     }
-                                }
-                            } else
-                                MessageBox.Show("No Songs folder was found inside your osu! folder" + Environment.NewLine + "Please make sure it exists, it is automatically created by osu", "Unexpected Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                } else
+                                    MessageBox.Show("No Songs folder was found inside your osu! folder" + Environment.NewLine + "Please make sure it exists, it is automatically created by osu", "Unexpected Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            }
+                            else
+                                MessageBox.Show("It seems like your osu is missing this files:" + Environment.NewLine + "collection.db" + Environment.NewLine + Environment.NewLine + "Please make sure it exists, it is automatically created by osu", "Unexpected Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         }
                         else
-                            MessageBox.Show("It seems like your osu is missing this files:" + Environment.NewLine + "collection.db" + Environment.NewLine + Environment.NewLine + "Please make sure it exists, it is automatically created by osu", "Unexpected Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            MessageBox.Show("It seems like your osu is missing this files:" + Environment.NewLine + "osu!.db" + Environment.NewLine + Environment.NewLine + "Please make sure it exists, it is automatically created by osu", "Unexpected Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                     else
-                        MessageBox.Show("It seems like your osu is missing this files:" + Environment.NewLine + "osu!.db" + Environment.NewLine + Environment.NewLine + "Please make sure it exists, it is automatically created by osu", "Unexpected Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show("It seems like your osu is missing both of these files:" + Environment.NewLine + "collection.db" + Environment.NewLine + "osu.db" + Environment.NewLine + Environment.NewLine + "Please make sure they exist, they are automatically created by osu", "Unexpected Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
-                else
-                    MessageBox.Show("It seems like your osu is missing both of these files:" + Environment.NewLine + "collection.db" + Environment.NewLine + "osu.db" + Environment.NewLine + Environment.NewLine + "Please make sure they exist, they are automatically created by osu", "Unexpected Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             NewTxt = false;
         }

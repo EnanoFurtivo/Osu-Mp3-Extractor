@@ -68,6 +68,7 @@
             // 
             // optionsButton
             // 
+            this.optionsButton.Enabled = false;
             this.optionsButton.Location = new System.Drawing.Point(315, 12);
             this.optionsButton.Name = "optionsButton";
             this.optionsButton.Size = new System.Drawing.Size(92, 21);
@@ -325,6 +326,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.SystemColors.Control;
             this.ClientSize = new System.Drawing.Size(825, 337);
             this.Controls.Add(this.linkLabel1);
             this.Controls.Add(this.loadedMapsLabel);
@@ -356,7 +358,7 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.Name = "MainForm";
-            this.Text = " ";
+            this.Text = " Osu Mp3 Extractor";
             this.Load += new System.EventHandler(this.MainForm_Load);
             ((System.ComponentModel.ISupportInitialize)(this.specsongsPictureBox)).EndInit();
             this.ResumeLayout(false);

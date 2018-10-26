@@ -44,24 +44,28 @@ namespace Osu_Mp3_Extractor
             comboBox1.Items.Add("Extract by selecting maps");
 
             SetFolder();
-            songs = new GetSongs(songsPath, osuDb);
-            songsModify = new List<Song>(songs.SongsList);
+            if (!closeApp)
+            {
+                songs = new GetSongs(songsPath, osuDb);
+                songsModify = new List<Song>(songs.SongsList);
 
-            //hides the buttons
-            addallButton.Enabled = false;
-            clearButton.Enabled = false;
-            addButton.Enabled = false;
-            optionsButton.Enabled = false;
-            searchTextBox.Enabled = false;
-            songsListBox.Enabled = false;
-            extractqueueListBox.Enabled = false;
-            comboBox2.Enabled = false;
+                //hides the buttons
+                addallButton.Enabled = false;
+                clearButton.Enabled = false;
+                addButton.Enabled = false;
+                optionsButton.Enabled = false;
+                searchTextBox.Enabled = false;
+                songsListBox.Enabled = false;
+                extractqueueListBox.Enabled = false;
+                comboBox2.Enabled = false;
+            }
+            else
+                Application.ExitThread();
         }
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
             cdb = CollectionDb.Read(collectionDb);
             comboBox2.Items.Clear();
-            thumbnailOnly = false;
 
             //hides the buttons
             addallButton.Enabled = false;
@@ -83,6 +87,7 @@ namespace Osu_Mp3_Extractor
             }
             else if (comboBox1.GetItemText(comboBox1.SelectedItem) == "Extract by selecting maps")
             {
+                selectedCollection = "osu!";
                 SelectFromOsuDb();
             }
         } 
@@ -90,8 +95,9 @@ namespace Osu_Mp3_Extractor
         {
             if (comboBox1.GetItemText(comboBox1.SelectedItem) == "Extract from collection")
             {
-                if (comboBox2.Text != "Collections")
+                if (comboBox2.GetItemText(comboBox2.SelectedItem) != "Collections")
                 {
+                    selectedCollection = comboBox2.GetItemText(comboBox2.SelectedItem);
                     SelectFromCollection();
                 }
                 else
@@ -195,6 +201,7 @@ namespace Osu_Mp3_Extractor
             {
                 foreach (Song song in songsForExtraction)
                 {
+                    songs.SongsList[song.Code].Collection = "osu!";
                     songs.SongsList[song.Code].Selected = false;
                 }
 
@@ -216,8 +223,9 @@ namespace Osu_Mp3_Extractor
                 bounce = true;
                 foreach (Song song in currentlyDisplayed)
                 {
-                    if (!song.Selected)
+                    if (!songs.SongsList[song.Code].Selected)
                     {
+                        songs.SongsList[song.Code].Collection = selectedCollection;
                         songs.SongsList[song.Code].Selected = true;
                         songsForExtraction.Add(songs.SongsList[song.Code]);
                     }
@@ -350,7 +358,7 @@ namespace Osu_Mp3_Extractor
             addallButton.Enabled = true;
             clearButton.Enabled = true;
             addButton.Enabled = true;
-            optionsButton.Enabled = true;
+            //optionsButton.Enabled = true;
             searchTextBox.Enabled = true;
             songsListBox.Enabled = true;
             extractqueueListBox.Enabled = true;
@@ -367,7 +375,7 @@ namespace Osu_Mp3_Extractor
             addallButton.Enabled = true;
             clearButton.Enabled = true;
             addButton.Enabled = true;
-            optionsButton.Enabled = true;
+            //optionsButton.Enabled = true;
             searchTextBox.Enabled = true;
             songsListBox.Enabled = true;
             extractqueueListBox.Enabled = true;
