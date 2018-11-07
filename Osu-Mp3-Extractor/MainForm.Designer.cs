@@ -57,6 +57,8 @@
             this.loadedMapsLabel = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.linkLabel1 = new System.Windows.Forms.LinkLabel();
+            this.extractingLabel = new System.Windows.Forms.Label();
+            this.label6 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.specsongsPictureBox)).BeginInit();
             this.SuspendLayout();
             // 
@@ -68,7 +70,6 @@
             // 
             // optionsButton
             // 
-            this.optionsButton.Enabled = false;
             this.optionsButton.Location = new System.Drawing.Point(315, 12);
             this.optionsButton.Name = "optionsButton";
             this.optionsButton.Size = new System.Drawing.Size(92, 21);
@@ -266,6 +267,7 @@
             // 
             // progressBar1
             // 
+            this.progressBar1.BackColor = System.Drawing.SystemColors.Control;
             this.progressBar1.Enabled = false;
             this.progressBar1.Location = new System.Drawing.Point(12, 12);
             this.progressBar1.Name = "progressBar1";
@@ -322,12 +324,37 @@
             this.linkLabel1.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
             this.linkLabel1.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabel1_LinkClicked);
             // 
+            // extractingLabel
+            // 
+            this.extractingLabel.BackColor = System.Drawing.Color.Transparent;
+            this.extractingLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 21.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.extractingLabel.Location = new System.Drawing.Point(338, 94);
+            this.extractingLabel.Name = "extractingLabel";
+            this.extractingLabel.Size = new System.Drawing.Size(152, 32);
+            this.extractingLabel.TabIndex = 40;
+            this.extractingLabel.Text = "0/0";
+            this.extractingLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.extractingLabel.Visible = false;
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Font = new System.Drawing.Font("Microsoft Sans Serif", 21.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label6.Location = new System.Drawing.Point(345, 64);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(138, 33);
+            this.label6.TabIndex = 41;
+            this.label6.Text = "Extracted";
+            this.label6.Visible = false;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Control;
             this.ClientSize = new System.Drawing.Size(825, 337);
+            this.Controls.Add(this.label6);
+            this.Controls.Add(this.extractingLabel);
             this.Controls.Add(this.linkLabel1);
             this.Controls.Add(this.loadedMapsLabel);
             this.Controls.Add(this.label7);
@@ -394,5 +421,7 @@
         private System.Windows.Forms.Label loadedMapsLabel;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.LinkLabel linkLabel1;
+        private System.Windows.Forms.Label extractingLabel;
+        private System.Windows.Forms.Label label6;
     }
 }

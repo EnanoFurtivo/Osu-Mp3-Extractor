@@ -21,10 +21,11 @@ namespace Osu_Mp3_Extractor
         private bool thumbnailOnExtractFile = true;
 
         //DEFINITIONS//
-        private string imageparam = @"([0,9]+\,[0,9]+)\,\""([^\""]+)\"".*";
+        //private string imageparam = @"([0,9]+\,[0,9]+)\,\""([^\""]+)\"".*";
         private string outputparam = @"OutputPath\=(.*)";
         private string songsparam = @"OsuPath\=(.*)";
         private string extractparam = @"Extracts\=(.*)";
+        private bool skip = false;
         private bool noAdd = false;
         private bool closeApp = false;
         private bool fromChangeFolder = false;
@@ -43,6 +44,7 @@ namespace Osu_Mp3_Extractor
         private string osuPath = "";
         private string collectionDb = "";
         private string osuDb = "";
+        private int extractionsTmp = 0;
         private int errorInt = 0;
         private int selectedValue = 0;
         private int selectedIndex = 0;
@@ -58,6 +60,7 @@ namespace Osu_Mp3_Extractor
         private List<Song> songsForCompleteExtraction = new List<Song>();
         private List<Song> songsForFinalExtraction = new List<Song>();
         private List<Song> songsForExtractionEmpty = new List<Song>();
+        private List<String> formats = new List<String>();
         private List<String> errorString;
         private GetSongs songs;
         private GetSongs songsFromCollection;
@@ -234,20 +237,20 @@ namespace Osu_Mp3_Extractor
                     if (songsForExtraction.Count == 0)//if last item
                     {
                         songsListBox.Focus();
-                        PrintSongDetails(selectedValue, true);
+                        PrintSongDetails(selectedValue, true, true);
                     }
                     else if (selectedIndexExt == songsForExtraction.Count)//if item from the bottom
                     {
                         extractqueueListBox.SetSelected(selectedIndexExt - 1, true);
                         extractqueueListBox.Focus();
                         getSelectedExt();
-                        PrintSongDetails(selectedValueExt, true);
+                        PrintSongDetails(selectedValueExt, true, true);
                     }else
                     {
                         extractqueueListBox.SetSelected(selectedIndexExt, true);
                         extractqueueListBox.Focus();
                         getSelectedExt();
-                        PrintSongDetails(selectedValueExt, true);
+                        PrintSongDetails(selectedValueExt, true, true);
                     }
                 }else //from normal list removing
                 {
@@ -289,11 +292,24 @@ namespace Osu_Mp3_Extractor
             pic.Description = "Cover";
             pic.MimeType = System.Net.Mime.MediaTypeNames.Image.Jpeg;
 
+            TagLib.File file;
+            TagLib.File file2;
+            TagLib.File file3;
+
+            extractionsTmp = 0;
             int i = 0;
             string subfoldersPath = "";
             errorInt = 0;
             errorString = new List<String>();
             
+            string temp = "";
+            bool bandtemp = true;
+            string mp3validname = "";
+            string mp3CopyPath = "";
+            string mp3CopyPathTemp = "";
+            string temp2 = "";
+            string ImagePath = "";
+
             string collectionvalidname = songCharReplace(selectedCollection);
 
             if (!Directory.Exists(outputPath + "\\" + collectionvalidname))
@@ -311,32 +327,62 @@ namespace Osu_Mp3_Extractor
             }
             else
                 subfoldersPath = outputPath + "\\" + collectionvalidname;
-
+            
             foreach (Song songn in songsForFinalExtraction)
             {
+                skip = false;
+
                 //Delete invalid chars of the songs title and artist
-                string mp3validname = songCharReplace(songn.Title, songn.Artist);
-                string mp3CopyPath = subfoldersPath + "\\" + mp3validname;
+                mp3validname = songCharReplace(songn.Title, songn.Artist);
+                mp3CopyPath = subfoldersPath + "\\" + mp3validname;
+                
                 //Copy the mp3
                 if (File.Exists(songn.Mp3Path))
                 {
-                    bool bandtemp = true;
-                    TagLib.File file2;
-                    TagLib.File file3;
+                    bandtemp = true;
 
                     if (File.Exists(mp3CopyPath + ".mp3"))
                     {
-                        file2 = TagLib.File.Create(mp3CopyPath + ".mp3");
-                        if (file2.Tag.Comment == songn.Hash)
+                        temp = "";
+
+                        try
+                        {
+                            file2 = TagLib.File.Create(mp3CopyPath + ".mp3");
+                            temp = file2.Tag.Comment;
+                            file2.Dispose();
+                        }
+                        catch (TagLib.CorruptFileException)
+                        {
+                            errorString.Add(errorInt.ToString() + " - " + "Mp3 File Was Corrupt at destination folder: " + songn.Title + " [Artist:" + songn.Artist + " |Creator:" + songn.Creator + "] " + "- " + @"https://osu.ppy.sh/b/" + songn.BeatmapId + " {Artist: " + songn.Artist + ", BeatmapSetId: " + songn.BeatmapSetId + ", Code: " + songn.Code + ", Creator: " + songn.Creator + ", DiffPath: " + songn.DiffPath + ", FolderName: " + songn.FolderName + ", FolderPath: " + songn.FolderPath + ", Hash: " + songn.Hash + ", Length: " + songn.Length + ", mapId: " + songn.BeatmapId + ", Mp3Name: " + songn.Mp3Name + ", Mp3Path: " + songn.Mp3Path + ", Selected: " + songn.Selected + ", ThreadId: " + songn.ThreadId + ", Title: " + songn.Title + "}");
+                            errorInt++;
+                            skip = true;
+                        }
+
+                        if (temp == songn.Hash)
                             bandtemp = false;
                         else
                         {
                             i = 0;
-                            string mp3CopyPathTemp = mp3CopyPath;
+                            mp3CopyPathTemp = mp3CopyPath;
+
                             while (System.IO.File.Exists(mp3CopyPathTemp + ".mp3"))
                             {
-                                file3 = TagLib.File.Create(mp3CopyPathTemp + ".mp3");
-                                if (file3.Tag.Comment == songn.Hash)
+                                temp2 = "";
+
+                                try
+                                {
+                                    file3 = TagLib.File.Create(mp3CopyPathTemp + ".mp3");
+                                    temp2 = file3.Tag.Comment;
+                                    file3.Dispose();
+                                }
+                                catch (TagLib.CorruptFileException)
+                                {
+                                    errorString.Add(errorInt.ToString() + " - " + "Mp3 File Was Corrupt at destination folder: " + songn.Title + " [Artist:" + songn.Artist + " |Creator:" + songn.Creator + "] " + "- " + @"https://osu.ppy.sh/b/" + songn.BeatmapId + " {Artist: " + songn.Artist + ", BeatmapSetId: " + songn.BeatmapSetId + ", Code: " + songn.Code + ", Creator: " + songn.Creator + ", DiffPath: " + songn.DiffPath + ", FolderName: " + songn.FolderName + ", FolderPath: " + songn.FolderPath + ", Hash: " + songn.Hash + ", Length: " + songn.Length + ", mapId: " + songn.BeatmapId + ", Mp3Name: " + songn.Mp3Name + ", Mp3Path: " + songn.Mp3Path + ", Selected: " + songn.Selected + ", ThreadId: " + songn.ThreadId + ", Title: " + songn.Title + "}");
+                                    errorInt++;
+                                    skip = true;
+                                }
+
+                                if (temp2 == songn.Hash)
                                     bandtemp = false;
 
                                 i++;
@@ -347,11 +393,11 @@ namespace Osu_Mp3_Extractor
                     }
                     mp3CopyPath += ".mp3";
 
-                    if (bandtemp)
+                    if (bandtemp && !skip)
                     {
                         //Create Song Object and copy
                         System.IO.File.Copy(songn.Mp3Path, mp3CopyPath, true);
-                        var file = TagLib.File.Create(mp3CopyPath);
+                        file = TagLib.File.Create(mp3CopyPath);
 
                         //Applying the tags
                         file.Tag.Title = songn.Title;
@@ -366,8 +412,7 @@ namespace Osu_Mp3_Extractor
                         //Applying the cover
                         if (thumbnailOnExtractFile)
                         {
-                            string ImagePath = GetImage(songn.Code);
-
+                            ImagePath = GetImage(songn.Code);
                             if (ImagePath != "" && System.IO.File.Exists(ImagePath))
                             {
                                 try
@@ -401,6 +446,7 @@ namespace Osu_Mp3_Extractor
                             }
                             file.Tag.Pictures = new TagLib.IPicture[] { pic };
                         }
+
                         //Save the mp3
                         extractions++;
                         file.Save();
@@ -417,14 +463,20 @@ namespace Osu_Mp3_Extractor
         }
         private void backgroundWorker1_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
-            PrintSongDetails(e.ProgressPercentage, false);
+            if (!skip)
+                //PrintSongDetails(e.ProgressPercentage, false, false);
             progressBar1.PerformStep();
+            extractingLabel.Text = extractionsTmp + "/" + songsForFinalExtraction.Count;
+            extractionsTmp++;
         }
         private void backgroundWorker1_RunWorkerCompleted(object sender, System.ComponentModel.RunWorkerCompletedEventArgs e)
         {
             //Finishes the process
             progressBar1.Visible = false;
             progressBar1.Value = 0;
+            extractionsTmp = 0;
+            extractingLabel.Visible = false;
+            label6.Visible = false;
 
             System.IO.File.Delete(txtPath);
             using (StreamWriter sw = System.IO.File.CreateText(txtPath))
@@ -437,12 +489,12 @@ namespace Osu_Mp3_Extractor
             addallButton.Enabled = true;
             clearButton.Enabled = true;
             addButton.Enabled = true;
-            //optionsButton.Enabled = true;
+            optionsButton.Enabled = true;
             searchTextBox.Enabled = true;
             songsListBox.Enabled = true;
             extractqueueListBox.Enabled = true;
 
-            PrintSongDetails(selectedValue, true);
+            PrintSongDetails(selectedValue, true, true);
 
             if (errorInt != 0)
             {
@@ -560,27 +612,48 @@ namespace Osu_Mp3_Extractor
         private string GetImage(int code)
         {
             string imagepath = "";
-            using (FrequentlyUsed fused = new FrequentlyUsed())
+            imagepath = readTxt(songs.SongsList[code]);
+            if (imagepath == "")
             {
-                int lineNumber = 0;
-                string[] lines = System.IO.File.ReadAllLines(songs.SongsList[code].DiffPath); //takes .osu file and transform into an array of strings
-                foreach (string line in lines)
+                List<Song> songsthreadid = new List<Song>();
+                foreach (Song songn in songs.SongsCompleteList)
                 {
-                    string text1 = lines[lineNumber];
-
-                    /// imagepath ///
-                    Regex r5 = new Regex(imageparam, RegexOptions.IgnoreCase);
-                    Match m5 = r5.Match(text1);
-                    if (m5.Success)
+                    if (songn.ThreadId == songs.SongsList[code].ThreadId)
+                        imagepath = readTxt(songn);
+                    if (imagepath != "")
+                        break;
+                }
+            }
+            return imagepath;
+        }
+        private string readTxt(Song song)
+        {
+            string imagePath = "";
+            int lineNumber = 0;
+            string[] lines = System.IO.File.ReadAllLines(song.DiffPath); //takes .osu file and transform into an array of strings
+            foreach (string line in lines)
+            {
+                if (lineNumber <= lines.Count() - 3)
+                {
+                    if (line == @"//Background and Video events" && lines[lineNumber + 1].Contains(".png") || lines[lineNumber + 1].Contains(".jpeg") || lines[lineNumber + 1].Contains(".jpg"))
                     {
-                        string imagename = m5.Groups[2].Value;
-                        imagepath = songs.SongsList[code].FolderPath + "\\" + imagename;   //imagepath
+                        string[] strtmp = lines[lineNumber + 1].Split((char)34);
+                        imagePath = song.FolderPath + "\\" + strtmp[1];
                         break;
                     }
-                    lineNumber++;
-                }
-            }//new
-            return imagepath;
+                    else if (line == @"//Background and Video events" && lines[lineNumber + 2].Contains(".png") || lines[lineNumber + 2].Contains(".jpeg") || lines[lineNumber + 2].Contains(".jpg"))
+                    {
+                        string[] strtmp = lines[lineNumber + 2].Split((char)34);
+                        imagePath = song.FolderPath + "\\" + strtmp[1];
+                        break;
+                    }
+                    else if (line == "[TimingPoints]" || line == "[Colours]" || line == "[HitObjects]")
+                        break;
+                }else
+                    break;
+                lineNumber++;
+            }
+            return imagePath;
         }
         private string songCharReplace(string str)
         {

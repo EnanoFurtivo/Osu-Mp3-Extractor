@@ -32,12 +32,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="osu-database-reader, Version=2.1.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\HoLLy.osu.DatabaseReader.2.1.0\lib\net40\osu-database-reader.dll</HintPath>
-    </Reference>
-    <Reference Include="osu.Shared, Version=1.0.3.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\osu.Shared.1.0.3\lib\net20\osu.Shared.dll</HintPath>
-    </Reference>
     <Reference Include="policy.2.0.taglib-sharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=db62eba44689b5b0, processorArchitecture=MSIL">
       <HintPath>..\packages\taglib.2.1.0.0\lib\policy.2.0.taglib-sharp.dll</HintPath>
     </Reference>
@@ -127,6 +121,16 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Defaultsongthumbnail.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\osu-database-reader-master\osu-database-reader\osu-database-reader.csproj">
+      <Project>{5b14a571-ea0c-42a0-b185-a908a3fa856e}</Project>
+      <Name>osu-database-reader</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\osu.Shared-master\osu.Shared\osu.Shared.csproj">
+      <Project>{8d45f161-ba32-40ee-8727-362037980afe}</Project>
+      <Name>osu.Shared</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
