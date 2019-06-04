@@ -42,6 +42,7 @@ namespace Osu_Mp3_Extractor
             appPath = spstring[0];  //appPath
             txtPath = appPath + @"\" + "SongExtractorLog.ini"; //txtPath
             imgPath = appPath + @"\" + "DefaultImg.png"; //imgPath
+            imgPathTemp = appPath + @"\" + "TempImg.jpeg"; //imgPathTemp
             txtErrorPath = appPath + @"\" + "ErrorLog.txt";
 
             //comboBox1.Items.Add("Extract by selecting from collection");

@@ -33,12 +33,14 @@ namespace Osu_Mp3_Extractor
         private bool lastListSelected = false; //false = list | true = extractlist
         private bool bounce = false;
         private bool newTxt = false;
+        private bool isJpeg = false;
         private string mode = "";
         private string selectedCollection = "";
         private string txtErrorPath = "";
         private string appPath = "";
         private string txtPath = "";
         private string imgPath = "";
+        private string imgPathTemp = "";
         private string outputPath = "";
         private string songsPath = "";
         private string osuPath = "";
@@ -71,6 +73,14 @@ namespace Osu_Mp3_Extractor
         #region Methods
         private void SetFolder()
         {
+            //Replace with json implementation
+
+
+            
+
+
+
+
             if (System.IO.File.Exists(txtPath))
             {
                 checkTxt();
@@ -81,7 +91,7 @@ namespace Osu_Mp3_Extractor
                 CreateSettings();
                 openFolderForm();
             }
-        }
+        } //--- JSON IMPLEMENTATION HERE ---
         private void openFolderForm()
         {
             Folders folders = new Folders(outputPath, osuPath, txtPath, extractions, fromChangeFolder, newTxt);
@@ -403,10 +413,14 @@ namespace Osu_Mp3_Extractor
                         file.Tag.Title = songn.Title;
                         //file.Tag.AlbumArtists = songn.Artist.Split(new char[] { ';' });
                         file.Tag.Performers = songn.Artist.Split(new char[] { ';' });
-                        if (mode == "Extract an entire collection")
-                            file.Tag.Album = selectedCollection;
-                        else
-                            file.Tag.Album = "osu!";
+
+
+                        //if (mode == "Extract an entire collection")
+                            //file.Tag.Album = selectedCollection;
+                        //else
+                            //file.Tag.Album = "osu!";
+                        file.Tag.Album = extractions.ToString();
+
                         file.Tag.Comment = songn.Hash;
 
                         //Applying the cover
@@ -536,7 +550,6 @@ namespace Osu_Mp3_Extractor
             }
             else
                 MessageBox.Show("All songs have been extracted succesfully", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
         }
         
         private void checkTxt()
@@ -630,6 +643,7 @@ namespace Osu_Mp3_Extractor
         {
             string imagePath = "";
             int lineNumber = 0;
+            isJpeg = true;
             string[] lines = System.IO.File.ReadAllLines(song.DiffPath); //takes .osu file and transform into an array of strings
             foreach (string line in lines)
             {
@@ -639,12 +653,16 @@ namespace Osu_Mp3_Extractor
                     {
                         string[] strtmp = lines[lineNumber + 1].Split((char)34);
                         imagePath = song.FolderPath + "\\" + strtmp[1];
+                        if (lines[lineNumber + 1].Contains(".png") || lines[lineNumber + 1].Contains(".jpg"))
+                            imagePath = jpgConvert(imagePath);
                         break;
                     }
                     else if (line == @"//Background and Video events" && lines[lineNumber + 2].Contains(".png") || lines[lineNumber + 2].Contains(".jpeg") || lines[lineNumber + 2].Contains(".jpg"))
                     {
                         string[] strtmp = lines[lineNumber + 2].Split((char)34);
                         imagePath = song.FolderPath + "\\" + strtmp[1];
+                        if (lines[lineNumber + 1].Contains(".png") || lines[lineNumber + 1].Contains(".jpg"))
+                            imagePath = jpgConvert(imagePath);
                         break;
                     }
                     else if (line == "[TimingPoints]" || line == "[Colours]" || line == "[HitObjects]")
@@ -697,6 +715,41 @@ namespace Osu_Mp3_Extractor
             var a9 = a8.Replace('|', '-');
 
             return t9 + " - " + a9;
+        }
+        private string jpgConvert (string path)
+        {
+            string newPath = path;
+            Bitmap bmp;
+
+            using (FrequentlyUsed fused = new FrequentlyUsed())
+            {
+                if (System.IO.File.Exists(path))
+                {
+                    try
+                    {
+                        bmp = fused.ResizeImage(path);
+                    }
+                    catch (Exception)
+                    {
+                        bmp = Resources.Defaultsongthumbnail;
+                    }
+                }
+                else
+                    bmp = Resources.Defaultsongthumbnail;
+            }
+
+            newPath = imgPathTemp;
+
+            try
+            {
+                bmp.Save(imgPathTemp, System.Drawing.Imaging.ImageFormat.Jpeg);
+            }
+            catch (Exception)
+            {
+                newPath = path;
+            }
+            
+            return newPath;
         }
         #endregion
 
