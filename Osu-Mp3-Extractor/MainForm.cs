@@ -34,6 +34,8 @@ namespace Osu_Mp3_Extractor
         //Form Events//
         private void MainForm_Load(object sender, EventArgs e)
         {
+            //SettingsHandler.New();
+
             formats.Add("jpg");
             formats.Add("png");
             formats.Add("jpeg");

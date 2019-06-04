@@ -91,7 +91,7 @@ namespace Osu_Mp3_Extractor
                 CreateSettings();
                 openFolderForm();
             }
-        } //--- JSON IMPLEMENTATION HERE ---
+        }   //Remove and replace for json
         private void openFolderForm()
         {
             Folders folders = new Folders(outputPath, osuPath, txtPath, extractions, fromChangeFolder, newTxt);
@@ -111,7 +111,7 @@ namespace Osu_Mp3_Extractor
             }
             else
                 closeApp = true;
-        }
+        }   //Remove and replace for json
 
         private void FillSongsFilteredList(List<Song> songstmp, string searchString)
         {
@@ -188,7 +188,7 @@ namespace Osu_Mp3_Extractor
                     }
                 }
             }
-        }
+        }   //recode and organize (also agrupate in FILL ALL LISTS)
         private void addOrRemoveSong()
         {
             bool bandtemp = true; //true = add //false = remove
@@ -272,7 +272,7 @@ namespace Osu_Mp3_Extractor
                 songsListBox.Focus();
             }
             bounce = false;
-        }
+        }   //Remove or agrupate in visual part
         
         private void getSelected()
         {
@@ -283,7 +283,7 @@ namespace Osu_Mp3_Extractor
                     selectedValue = Int32.Parse(text);
                 selectedIndex = songsListBox.SelectedIndex;
             }
-        }
+        }   //Remove or agrupate in visual part
         private void getSelectedExt()
         {
             if (extractqueueListBox.SelectedValue != null)
@@ -293,8 +293,8 @@ namespace Osu_Mp3_Extractor
                     selectedValueExt = Int32.Parse(text);
                 selectedIndexExt = extractqueueListBox.SelectedIndex;
             }
-        }
-        
+        }   //Remove or agrupate in visual part
+
         private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
         {
             TagLib.Picture pic = new TagLib.Picture();
@@ -474,7 +474,7 @@ namespace Osu_Mp3_Extractor
                 //Update Prograss Bar
                 backgroundWorker1.ReportProgress(songn.Code);
             }
-        }
+        }    //Agrupate in backpart also recode
         private void backgroundWorker1_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
             if (!skip)
@@ -482,7 +482,7 @@ namespace Osu_Mp3_Extractor
             progressBar1.PerformStep();
             extractingLabel.Text = extractionsTmp + "/" + songsForFinalExtraction.Count;
             extractionsTmp++;
-        }
+        }   //Agrupate in backpart also recode
         private void backgroundWorker1_RunWorkerCompleted(object sender, System.ComponentModel.RunWorkerCompletedEventArgs e)
         {
             //Finishes the process
@@ -550,8 +550,8 @@ namespace Osu_Mp3_Extractor
             }
             else
                 MessageBox.Show("All songs have been extracted succesfully", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
-        }
-        
+        }   //Agrupate in backpart also recode
+
         private void checkTxt()
         {
             bool txterror = false;
@@ -600,7 +600,7 @@ namespace Osu_Mp3_Extractor
                 ResetSettings();
                 txterror = false;
             } //check path and set variables
-        }
+        }   //Remove and replace for json
         private void ResetSettings()
         {
             System.IO.File.Delete(txtPath);
@@ -610,7 +610,7 @@ namespace Osu_Mp3_Extractor
                 sw.WriteLine("OsuPath=");
                 sw.WriteLine("Extracts=");
             }
-        }
+        }   //Remove and replace for json
         private void CreateSettings()
         {
             using (StreamWriter sw = System.IO.File.CreateText(txtPath))
@@ -620,7 +620,7 @@ namespace Osu_Mp3_Extractor
                 sw.WriteLine("Extracts=");
             }
             newTxt = true;
-        }
+        }   //Remove and replace for json
 
         private string GetImage(int code)
         {
@@ -638,7 +638,7 @@ namespace Osu_Mp3_Extractor
                 }
             }
             return imagepath;
-        }
+        }   //Remove or agrupate in visual part also recode
         private string readTxt(Song song)
         {
             string imagePath = "";
@@ -672,7 +672,7 @@ namespace Osu_Mp3_Extractor
                 lineNumber++;
             }
             return imagePath;
-        }
+        }   //Remove or agrupate in visual part also recode
         private string songCharReplace(string str)
         {
             string strtemp = str;
@@ -688,7 +688,7 @@ namespace Osu_Mp3_Extractor
             var t9 = t8.Replace('|', '-');
 
             return t9;
-        }
+        }   //work with song 
         private string songCharReplace(string title, string artist)
         {
             string songTitletemp = title;
@@ -715,7 +715,7 @@ namespace Osu_Mp3_Extractor
             var a9 = a8.Replace('|', '-');
 
             return t9 + " - " + a9;
-        }
+        }   //work with song 
         private string jpgConvert (string path)
         {
             string newPath = path;
@@ -750,54 +750,7 @@ namespace Osu_Mp3_Extractor
             }
             
             return newPath;
-        }
+        }   //work with song 
         #endregion
-
-        //Dead code
-        /*if (songsForExtraction.Count() != 0)
-            {
-                extractButton.Enabled = true;
-                clearButton.Enabled = true;
-                PrintExtractList();
-            }
-            else
-            {
-                lastListSelected = false;
-                songsListBox.Focus();
-                extractButton.Enabled = false;
-                clearButton.Enabled = false;
-                PrintExtractList();
-            }
-
-            if (!lastListSelected)
-            {
-                extractqueueListBox.ClearSelected();
-                songsListBox.Focus();
-                PrintSongDetails(selectedValue, true);
-            }else
-            {
-                if (selectedIndexExt == songsForExtraction.Count)
-                {
-                    if (songsForExtraction.Count() == 1)
-                    {
-                        lastListSelected = false;
-                        songsListBox.Focus();
-                        extractButton.Enabled = false;
-                        clearButton.Enabled = false;
-                        PrintExtractList();
-                    }
-                    else
-                    {
-                        extractqueueListBox.SetSelected(selectedIndexExt - 1, true);
-                        PrintSongDetails(selectedValueExt, true);
-                        extractqueueListBox.Focus();
-                    }
-                }
-                else
-                {
-                    extractqueueListBox.Focus();
-                    PrintSongDetails(selectedValueExt, true);
-                }
-            }*/
     }
 }
