@@ -25,6 +25,7 @@ namespace Osu_Mp3_Extractor
         private string outputparam = @"OutputPath\=(.*)";
         private string songsparam = @"OsuPath\=(.*)";
         private string extractparam = @"Extracts\=(.*)";
+        private bool isAndroid = true; //Chage for debugging purposes
         private bool skip = false;
         private bool noAdd = false;
         private bool closeApp = false;
@@ -403,12 +404,17 @@ namespace Osu_Mp3_Extractor
                         file.Tag.Title = songn.Title;
                         //file.Tag.AlbumArtists = songn.Artist.Split(new char[] { ';' });
                         file.Tag.Performers = songn.Artist.Split(new char[] { ';' });
-                        if (mode == "Extract an entire collection")
-                            file.Tag.Album = selectedCollection;
-                        else
-                            file.Tag.Album = "osu!";
-                        file.Tag.Comment = songn.Hash;
 
+                        if (!isAndroid)
+                        {
+                            if (mode == "Extract an entire collection")
+                                file.Tag.Album = selectedCollection;
+                            else
+                                file.Tag.Album = "osu!";
+                            file.Tag.Comment = songn.Hash;
+                        }
+                        else
+                            
                         //Applying the cover
                         if (thumbnailOnExtractFile)
                         {
