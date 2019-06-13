@@ -22,7 +22,7 @@ namespace Osu_Mp3_Extractor
         public MainForm()
         {
             InitializeComponent();
-            
+
             backgroundWorker1 = new BackgroundWorker();
             backgroundWorker1.DoWork += backgroundWorker1_DoWork;
             backgroundWorker1.ProgressChanged += backgroundWorker1_ProgressChanged;
@@ -34,18 +34,16 @@ namespace Osu_Mp3_Extractor
         //Form Events//
         private void MainForm_Load(object sender, EventArgs e)
         {
-            //SettingsHandler.New();
-
             formats.Add("jpg");
             formats.Add("png");
             formats.Add("jpeg");
 
             string[] spstring = Application.ExecutablePath.Split(new string[] { "\\Osu-Mp3-Extractor.exe" }, StringSplitOptions.None);
-            appPath = spstring[0];  //appPath
-            txtPath = appPath + @"\" + "SongExtractorLog.ini"; //txtPath
-            imgPath = appPath + @"\" + "DefaultImg.png"; //imgPath
-            imgPathTemp = appPath + @"\" + "TempImg.jpeg"; //imgPathTemp
-            txtErrorPath = appPath + @"\" + "ErrorLog.txt";
+            AppPath = spstring[0];  //appPath
+            txtPath = AppPath + @"\" + "SongExtractorLog.ini"; //txtPath
+            imgPath = AppPath + @"\" + "DefaultImg.png"; //imgPath
+            imgPathTemp = AppPath + @"\" + "TempImg.jpeg"; //imgPathTemp
+            txtErrorPath = AppPath + @"\" + "ErrorLog.txt";
 
             //comboBox1.Items.Add("Extract by selecting from collection");
             comboBox1.Items.Add("Extract by selecting from library");
@@ -104,7 +102,7 @@ namespace Osu_Mp3_Extractor
 
             //focus
             songsListBox.Focus();
-            
+
             if (comboBox1.GetItemText(comboBox1.SelectedItem) == "Extract by selecting from library")
             {
                 mode = "Extract by selecting from library";
@@ -126,7 +124,7 @@ namespace Osu_Mp3_Extractor
                 selectedCollection = "osu!";
                 CompleteLibrary();
             }
-        } 
+        }
         private void comboBox2_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (mode == "Extract an entire collection")
@@ -139,7 +137,7 @@ namespace Osu_Mp3_Extractor
                 else
                     MessageBox.Show("Please select a collection", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
             }
-        } 
+        }
         private void searchTextBox_TextChanged(object sender, EventArgs e)
         {
             if (searchTextBox.Text != "" && searchTextBox.Text != "Serach by title, artist or Map creator")
@@ -158,12 +156,12 @@ namespace Osu_Mp3_Extractor
         {
             if (searchTextBox.Text == "")
                 searchTextBox.Text = "Serach by title, artist or Map creator";
-        } 
+        }
         private void searchTextBox_Enter(object sender, EventArgs e)
         {
             if (searchTextBox.Text == "Serach by title, artist or Map creator")
                 searchTextBox.Text = "";
-        } 
+        }
         private void songsListBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (songsListBox.SelectedValue != null && !bounce)
@@ -172,14 +170,14 @@ namespace Osu_Mp3_Extractor
                 getSelected();
                 PrintSongDetails(selectedValue, true, true);
             }
-        } 
+        }
         private void songsListBox_KeyPress(object sender, KeyPressEventArgs e)
         {
             if (e.KeyChar == 13 && !noAdd)
             {
                 addOrRemoveSong();
             }
-        } 
+        }
         private void extractqueueListBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (extractqueueListBox.SelectedValue != null && !bounce)
@@ -188,7 +186,7 @@ namespace Osu_Mp3_Extractor
                 getSelectedExt();
                 PrintSongDetails(selectedValueExt, true, true);
             }
-        } 
+        }
         private void extractqueueListBox_KeyPress(object sender, KeyPressEventArgs e)
         {
             if (e.KeyChar == 13 && !noAdd)
@@ -326,7 +324,7 @@ namespace Osu_Mp3_Extractor
             }
             extractqueueListBox.DisplayMember = "Title";
             extractqueueListBox.ValueMember = "Code";
-        } 
+        }
         private void PrintSongsList(List<Song> songstmp, bool sort)
         {
             if (!fromFilteredList)
@@ -343,7 +341,7 @@ namespace Osu_Mp3_Extractor
             songsListBox.ValueMember = "Code";
 
             loadedMapsLabel.Text = songstmp.Count.ToString();
-        } 
+        }
         private void PrintSongDetails(int code, bool buttonActive, bool thumbnailAvtive)
         {
             //title, artist, creator
@@ -363,7 +361,7 @@ namespace Osu_Mp3_Extractor
                 {
                     addButton.Text = "Add to extract queue";
                 }
-            }else
+            } else
                 addButton.Text = "";
             //length
             var t = songs.SongsList[code].Length;
@@ -381,12 +379,12 @@ namespace Osu_Mp3_Extractor
                 tempsec = "0" + span.Seconds.ToString();
             else
                 tempsec = span.Seconds.ToString();
-            
+
             lengthTextBox.Text = tempmin + ":" + tempsec;
 
             //thumbnail
             if (thumbnailPreview && thumbnailAvtive)
-            PrintThumbnail(code);
+                PrintThumbnail(code);
         }
         private void PrintThumbnail(int code)
         {
@@ -444,7 +442,7 @@ namespace Osu_Mp3_Extractor
             searchTextBox.Enabled = true;
             songsListBox.Enabled = true;
             extractqueueListBox.Enabled = true;
-            
+
             PrintSongsList(songsFromCollectionModify, true);
             songsListBox.Focus();
             getSelected();
@@ -495,5 +493,7 @@ namespace Osu_Mp3_Extractor
             notifyIcon1.Visible = true;
         } 
         */
+
+        public static string AppPath { get; set; }
     }
 }

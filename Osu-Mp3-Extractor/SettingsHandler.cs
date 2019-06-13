@@ -4,45 +4,50 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using System.IO;
 
 namespace Osu_Mp3_Extractor
 {
     public class SettingsHandler
     {
-        private Settings settings;
-
-        public static void New(string AppPath)
-        {
-
-
-        }   //Create all possible configs from apppath and default everything else
-
         //Methods
-        public static void ParseFromTxt()
+        public void New(string AppPath)
         {
-            //Parse and fill from txt json to Settings OBJ
-            if (Exists())
+            //Set everything to default values
+            settings.AppPath = "";
+
+
+            Settings settings = new Settings(AppPath);
+
+
+            WriteToJson(settings);
+        }   //Create all possible configs from apppath and default everything else
+        public void ReadFromJson()
+        {
+            if (Exists((MainForm.AppPath + @"\settings.json")))
             {
 
+
+
+
+
             }
-
-            //settings = new Settings();
-        }  //Finish
-        public static void ParseToTxt()
+            else
+                New((MainForm.AppPath + @"\settings.json"));
+        }  //Parse and fill from txt json to Settings OBJ
+        public void WriteToJson(Settings settings)
         {
-            //var jsonSettings = JsonConvert.SerializeObject(settings);
-            //System.IO.File.WriteAllText((settings.AppPath + @"\settings.json"), jsonSettings);
+            var jsonSettings = JsonConvert.SerializeObject(settings);
+            System.IO.File.WriteAllText((settings.AppPath + @"\settings.json"), jsonSettings);
         }   //Fill txt json from Settings OBJ
-        private static bool Exists()
+        private bool Exists(string jsonpath)
         {
-            bool exists = false; //True for debugging
+            if (File.Exists(jsonpath))
+                return true;
+            else
+                return false;
+        }   //Exists
 
-
-
-     
-            return exists;
-        }   //Finish check when done
-
-        public static Settings Settings { get; set; }
+        public Settings Settings { get; set; }
     }
 }

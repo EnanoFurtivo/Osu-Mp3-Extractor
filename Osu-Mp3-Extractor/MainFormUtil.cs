@@ -37,7 +37,6 @@ namespace Osu_Mp3_Extractor
         private string mode = "";
         private string selectedCollection = "";
         private string txtErrorPath = "";
-        private string appPath = "";
         private string txtPath = "";
         private string imgPath = "";
         private string imgPathTemp = "";
