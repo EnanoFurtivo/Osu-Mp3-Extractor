@@ -158,6 +158,7 @@ namespace Osu_Mp3_Extractor
                 }/// foldername, folderpath ///
             }/// subfolder ///
         }*/
+        
         private void ExtractSongs(string songsPath, string osuDb, string collectionDb, string collectionName)
         {
             List<int> threadIds = new List<int>();

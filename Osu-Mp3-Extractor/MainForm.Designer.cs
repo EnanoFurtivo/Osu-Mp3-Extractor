@@ -269,7 +269,7 @@
             // 
             this.progressBar1.BackColor = System.Drawing.SystemColors.Control;
             this.progressBar1.Enabled = false;
-            this.progressBar1.Location = new System.Drawing.Point(12, 12);
+            this.progressBar1.Location = new System.Drawing.Point(12, 25);
             this.progressBar1.Name = "progressBar1";
             this.progressBar1.Size = new System.Drawing.Size(804, 21);
             this.progressBar1.Step = 1;

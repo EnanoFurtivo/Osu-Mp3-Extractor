@@ -62,7 +62,7 @@ namespace Osu_Mp3_Extractor
         private List<Song> songsForFinalExtraction = new List<Song>();
         private List<Song> songsForExtractionEmpty = new List<Song>();
         private List<String> formats = new List<String>();
-        private List<String> errorString;
+        private List<String> errorString; 
         private GetSongs songs;
         private GetSongs songsFromCollection;
         private BackgroundWorker backgroundWorker1;
@@ -411,10 +411,11 @@ namespace Osu_Mp3_Extractor
                                 file.Tag.Album = selectedCollection;
                             else
                                 file.Tag.Album = "osu!";
-                            file.Tag.Comment = songn.Hash;
                         }
                         else
-                            
+                            file.Tag.Comment = songn.Hash;
+                            file.Tag.Album = extractions.ToString();
+
                         //Applying the cover
                         if (thumbnailOnExtractFile)
                         {
@@ -663,19 +664,16 @@ namespace Osu_Mp3_Extractor
         }
         private string songCharReplace(string str)
         {
-            string strtemp = str;
-
-            var t1 = strtemp.Replace('/', '-');
-            var t2 = t1.Replace('\\', '-');
-            var t3 = t2.Replace(':', ' ');
-            var t4 = t3.Replace('*', ' ');
-            var t5 = t4.Replace('?', ' ');
-            var t6 = t5.Replace('"', '-');
-            var t7 = t6.Replace('<', '[');
-            var t8 = t7.Replace('>', ']');
-            var t9 = t8.Replace('|', '-');
-
-            return t9;
+            str = str.Replace('/', '-');
+            str = str.Replace('\\', '-');
+            str = str.Replace(':', ' ');
+            str = str.Replace('*', ' ');
+            str = str.Replace('?', ' ');
+            str = str.Replace('"', '-');
+            str = str.Replace('<', '[');
+            str = str.Replace('>', ']');
+            str = str.Replace('|', '-');
+            return str;
         }
         private string songCharReplace(string title, string artist)
         {
