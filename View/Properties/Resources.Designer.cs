@@ -69,5 +69,25 @@ namespace View.Properties {
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
+        
+        /// <summary>
+        ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Defaultsongthumbnaildim {
+            get {
+                object obj = ResourceManager.GetObject("Defaultsongthumbnaildim", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Defaultsongthumbnaildimnottoomuch {
+            get {
+                object obj = ResourceManager.GetObject("Defaultsongthumbnaildimnottoomuch", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
     }
 }

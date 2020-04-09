@@ -18,9 +18,15 @@ namespace ClassLibrary
 
             Cfg = new Dictionary<string, string>() //Generate default settings dictionary
             {
-                {"output path", ""},
-                {"osu! path", ""},
-                {"include image", ""}
+                {"output path", string.Empty},
+                {"osu! path", string.Empty},
+                {"include image", string.Empty},
+                {"overwrite album", string.Empty},
+                {"overwrite artist", string.Empty},
+                {"overwrite title", string.Empty},
+                {"force album", string.Empty},
+                {"force artist", string.Empty},
+                {"force title", string.Empty}
             };
         }
 
@@ -53,19 +59,23 @@ namespace ClassLibrary
                     {
                         if (line.Contains('='))
                         {
-                            //Exclude " = " from the dictionary
-                            int j = line.IndexOf('=');
-                            string key = line.Substring(0, j - 1);
-                            string value = line.Substring(j + 2);
-
-                            foreach (System.Collections.Generic.KeyValuePair<string, string> item in Cfg)
+                            try
                             {
-                                if (item.Key == key && value != "" && value != null)
+                                //Exclude " = " from the dictionary
+                                int j = line.IndexOf('=');
+                                string key = line.Substring(0, j - 1);
+                                string value = line.Substring(j + 2);
+
+                                foreach (System.Collections.Generic.KeyValuePair<string, string> item in Cfg)
                                 {
-                                    cfgCopy[key] = value;
-                                    i++;
+                                    if (item.Key == key && value != string.Empty && value != null)
+                                    {
+                                        cfgCopy[key] = value;
+                                        i++;
+                                    }
                                 }
                             }
+                            catch (Exception) { };
                         }
                     }
                 }
@@ -101,7 +111,7 @@ namespace ClassLibrary
         private bool checkOutPath(string outPath)
         {
             bool result = false;
-            if (outPath == "")
+            if (outPath == string.Empty)
                 MessageBox.Show("Opps!, output path seems to be invalid, please select a new one...", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
             else
                 if (Directory.Exists(outPath))
@@ -111,13 +121,13 @@ namespace ClassLibrary
         private bool checkOsuPath(string osuPath)
         {
             bool result = false;
-            if (osuPath == "")
+            if (osuPath == string.Empty)
                 MessageBox.Show("Opps!, osu path seems to be invalid, please select a new one...", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
             else
             {
-                string osuDb = "";
-                string collectionDb = "";
-                string songsPath = "";
+                string osuDb = string.Empty;
+                string collectionDb = string.Empty;
+                string songsPath = string.Empty;
 
                 if (!Directory.Exists(osuPath)) //Error no osu! folder 
                     MessageBox.Show("It seems like your osu! folder has been renamed, moved or deleted. Please restore it or select a new one", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
@@ -139,7 +149,7 @@ namespace ClassLibrary
                                 collectionDb = subfile;
                         }
 
-                        if (osuDb == "" && collectionDb == "")
+                        if (osuDb == string.Empty && collectionDb == string.Empty)
                             MessageBox.Show("That was really weird. Your osu! folder doesnt contain neither osu!.db or collections.db files, try selecting another osu! installation or getting yourself a new one. Opening the game should fix it tho LOL", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                         else if (osuDb == "")
                             MessageBox.Show("That was really weird. Your osu! folder doesnt contain osu!.db file, try selecting another osu! installation or getting yourself a new one. Opening the game should fix it tho LOL", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
@@ -153,9 +163,17 @@ namespace ClassLibrary
 
             return result;
         }
+
         private void updatePublicProperties()
         {
             if (Cfg["include image"] == "true") IncludeThumbnails = true; else IncludeThumbnails = false;
+            if (Cfg["overwrite album"] == "true") OverwriteAlbum = true; else OverwriteAlbum = false;
+            if (Cfg["overwrite artist"] == "true") OverwriteArtist = true; else OverwriteArtist = false;
+            if (Cfg["overwrite title"] == "true") OverwriteTitle = true; else OverwriteTitle = false;
+            if (Cfg["force album"] == "true") ForceAlbum = true; else ForceAlbum = false;
+            if (Cfg["force artist"] == "true") ForceArtist = true; else ForceArtist = false;
+            if (Cfg["force title"] == "true") ForceTitle = true; else ForceTitle = false;
+
             OutPath = Cfg["output path"];
             OsuPath = Cfg["osu! path"];
             OsuDbPath = Path.Combine(Cfg["osu! path"], "osu!.db");
@@ -174,6 +192,13 @@ namespace ClassLibrary
         public string SongsPath { get; set; }
         public string OsuPath { get; set; }
         public string OutPath { get; set; }
+
         public bool IncludeThumbnails { get; set; }
+        public bool OverwriteAlbum { get; set; }
+        public bool OverwriteArtist { get; set; }
+        public bool OverwriteTitle { get; set; }
+        public bool ForceAlbum { get; set; }
+        public bool ForceArtist { get; set; }
+        public bool ForceTitle { get; set; }
     }
 }

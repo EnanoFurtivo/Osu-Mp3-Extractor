@@ -5,10 +5,10 @@ using System.Text;
 using System.Threading.Tasks;
 using System.ComponentModel;
 using TagLib;
-using osu_database_reader.BinaryFiles;
-using osu_database_reader.Components.Beatmaps;
 using System.Windows.Forms;
 using System.IO;
+using osu_database_reader.BinaryFiles;
+using osu_database_reader.Components.Beatmaps;
 
 namespace ClassLibrary
 {
@@ -19,19 +19,19 @@ namespace ClassLibrary
             ViewButtonOptions = buttonOptions;
             ViewButtonExtract = buttonExtract;
             ViewButtonCancel = buttonCancel;
-
             ViewPrBar = progressBar;
 
             Pic = new TagLib.Picture();
             Pic.Type = TagLib.PictureType.FrontCover;
             Pic.Description = "Cover";
             Pic.MimeType = System.Net.Mime.MediaTypeNames.Image.Jpeg;
-            
+
             BackgroundWorker1 = new BackgroundWorker();
             BackgroundWorker1.DoWork += BackgroundWorker1_DoWork;
             BackgroundWorker1.ProgressChanged += BackgroundWorker1_ProgressChanged;
             BackgroundWorker1.RunWorkerCompleted += BackgroundWorker1_RunWorkerCompleted;
             BackgroundWorker1.WorkerReportsProgress = true;
+            BackgroundWorker1.WorkerSupportsCancellation = true;
         }
 
         public void extract(string mode, Configurations configs,  OsuDb odb, CollectionDb cdb)
@@ -41,31 +41,47 @@ namespace ClassLibrary
             ValidMode = validChars(mode);
             Odb = odb;
             Cdb = cdb;
+            Result = false;
 
             if (Odb.Beatmaps.Count != 0)
             {
                 Log = new List<string>();
-
-                Result = false;
-                viewUpdate(true);
-
-                if (!Directory.Exists(Path.Combine(Configs.OutPath, Mode)))
+                
+                try
                 {
-                    try
+                    Directory.CreateDirectory(Path.Combine(Configs.OutPath, ValidMode));
+                    OutputSubFolder = Path.Combine(Configs.OutPath, ValidMode);
+
+                    if (Mode == "Complete library")
                     {
-                        Directory.CreateDirectory(Path.Combine(Configs.OutPath, Mode));
-                        OutputSubFolder = Path.Combine(Configs.OutPath, Mode);
-                        BackgroundWorker1.RunWorkerAsync();
+                        PrBarMax = 0;
+                        BeatmapEntry oldBeatmap = Odb.Beatmaps[0];
+                        foreach (BeatmapEntry beatmap in Odb.Beatmaps)
+                        {
+                            if (oldBeatmap.BeatmapSetId != beatmap.BeatmapSetId)
+                                PrBarMax++;
+                            oldBeatmap = beatmap;
+                        }
+                        PrBarMax++;
                     }
-                    catch (Exception)
+                    else
                     {
-                        MessageBox.Show("Unable to create directory:" + Path.Combine(Configs.OutPath, Mode) + Environment.NewLine + Environment.NewLine + "Please check if the fonder is read only or protected...", "Unexpected Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        PrBarMax = 0;
+
+                        //Select collection
+                        foreach (Collection col in Cdb.Collections)
+                            if (col.Name == Mode) SelectedCollection = col;
+
+                        foreach (string hash in SelectedCollection.BeatmapHashes)
+                            PrBarMax++;
                     }
-                }
-                else
-                {
-                    OutputSubFolder = Path.Combine(Configs.OutPath, Mode);
+                    
+                    viewUpdate(true, PrBarMax);
                     BackgroundWorker1.RunWorkerAsync();
+                }
+                catch (Exception)
+                {
+                    MessageBox.Show("Unable to create directory:" + Path.Combine(Configs.OutPath, ValidMode) + Environment.NewLine + Environment.NewLine + "Please check if the fonder is read only or protected...", "Unexpected Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }else
                 MessageBox.Show("Your osu seems to have 0 songs thats weird..." + Environment.NewLine + Environment.NewLine + "Please put some maps in it or try another installation...", "Unexpected Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -73,44 +89,81 @@ namespace ClassLibrary
         public void cancel()
         {
             Cancel = true;
+            BackgroundWorker1.CancelAsync();
+            viewUpdate(false);
         }
 
         private void BackgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
         {
             if (Mode == "Complete library")
             {
+                int i = 0;
+                int j = 1;
+
                 BeatmapEntry oldBeatmap = Odb.Beatmaps[0];
-                foreach (BeatmapEntry beatmap in Odb.Beatmaps)
+                BeatmapEntry beatmap = Odb.Beatmaps[0];
+
+                while (!Cancel && j < Odb.Beatmaps.Count)
                 {
                     if (oldBeatmap.BeatmapSetId != beatmap.BeatmapSetId)
                     {
+                        i++;
                         extractBeatmap(oldBeatmap);
-                    }
-
-                    if (Cancel)
-                    {
-                        BackgroundWorker1.CancelAsync();
-                        viewUpdate(false);
+                        BackgroundWorker1.ReportProgress(i);
                     }
 
                     oldBeatmap = beatmap;
+                    beatmap = Odb.Beatmaps[j];
+                    j++;
                 }
-                extractBeatmap(oldBeatmap);
+
+                if (!Cancel)
+                {
+                    i++;
+                    extractBeatmap(oldBeatmap);
+                    BackgroundWorker1.ReportProgress(i);
+                    Result = true;
+                }
+                else
+                    Cancel = false;
             }
             else
             {
-                ; //ADDSUPPORT FOR COLLECTIONS
+                int i = 0;
+                int j = 0;
+
+                //Iterate though maps
+                BeatmapEntry beatmap = Odb.Beatmaps[0];
+                while (!Cancel && j < Odb.Beatmaps.Count && i < SelectedCollection.BeatmapHashes.Count)
+                {
+                    foreach (string hash in SelectedCollection.BeatmapHashes)
+                    {
+                        if (beatmap.BeatmapChecksum == hash)
+                        {
+                            i++;
+                            extractBeatmap(beatmap);
+                            BackgroundWorker1.ReportProgress(i);
+                        }
+                    }
+                    
+                    beatmap = Odb.Beatmaps[j];
+                    j++;
+                }
+                
+                if (!Cancel) Result = true;
+                else Cancel = false;
             }
         }
         private void BackgroundWorker1_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
+            ViewButtonExtract.Text = e.ProgressPercentage.ToString() + " / " + PrBarMax.ToString();
             ViewPrBar.PerformStep();
         }
         private void BackgroundWorker1_RunWorkerCompleted(object sender, System.ComponentModel.RunWorkerCompletedEventArgs e)
         {
-            Result = true;
             viewUpdate(false);
         }
+
         private void extractBeatmap(BeatmapEntry bmp)
         {
             try
@@ -134,17 +187,46 @@ namespace ClassLibrary
             try
             {
                 System.IO.File.Copy(input, output, true);
-
-                File = TagLib.File.Create(output);
-                File.Tag.Title = bmp.Title;
-                File.Tag.AlbumArtists = bmp.Artist.Split(new char[] { ';' });
-                File.Tag.Performers = bmp.Artist.Split(new char[] { ';' });
-                File.Tag.Album = ValidMode;
-                File.Save();
-
-                if (Configs.IncludeThumbnails)
+                
+                if (Configs.OverwriteAlbum || Configs.OverwriteArtist || Configs.OverwriteTitle)
                 {
-                    ; //ADD SUPPORT FOR THUMBNAILS
+                    File = TagLib.File.Create(output);
+                    TagLib.File fileAux = null;
+
+                    if (useAuxFile())
+                        fileAux = File;
+
+                    if (forceTitle()) //ask title
+                        File.Tag.Title = bmp.Title;
+                    else if (notForceTitle())
+                        if (fileAux.Tag.Title == null) File.Tag.Title = bmp.Title;
+
+                    if (forceAlbum()) //ask album
+                        File.Tag.Album = ValidMode;
+                    else if (notForceTitle())
+                        if (fileAux.Tag.Album == null) File.Tag.Album = ValidMode;
+                    
+                    if (forceArtist())
+                        updateArtist(bmp.Artist);
+                    else if (notForceArtist())
+                    {
+                        if (fileAux.Tag.AlbumArtists.Count() == 0 && fileAux.Tag.Performers.Count() == 0)
+                            updateArtist(bmp.Artist);
+                        else if (fileAux.Tag.AlbumArtists.Count() != 0 && fileAux.Tag.Performers.Count() == 0)
+                            updateArtist(File.Tag.AlbumArtists[0]);
+                        else if (fileAux.Tag.Performers.Count() != 0 && fileAux.Tag.AlbumArtists.Count() == 0)
+                            updateArtist(File.Tag.Performers[0]);
+                    }
+                    
+                    if (Configs.IncludeThumbnails)
+                    {
+                        ; //ADD THUMBNAIL SUPPORT
+                    }
+                    
+                    File.Save();
+
+                    if (useAuxFile())
+                        fileAux.Dispose();
                 }
             }
             catch (FileNotFoundException fileMissing)
@@ -168,13 +250,52 @@ namespace ClassLibrary
                 Log.Add("[Error] For beatmap: " + entryName + " = " + exeption.Message);
             }
         }
+        
+        private bool notForceTitle()
+        {
+            return (Configs.OverwriteTitle && !Configs.ForceTitle);
+        }
+        private bool forceTitle()
+        {
+            return (Configs.OverwriteTitle && Configs.ForceTitle);
+        }
+        private bool notForceAlbum()
+        {
+            return (Configs.OverwriteAlbum && !Configs.ForceAlbum);
+        }
+        private bool forceAlbum()
+        {
+            return (Configs.OverwriteAlbum && Configs.ForceAlbum);
+        }
+        private bool notForceArtist()
+        {
+            return (Configs.OverwriteArtist && !Configs.ForceArtist);
+        }
+        private bool forceArtist()
+        {
+            return (Configs.OverwriteArtist && Configs.ForceArtist);
+        }
+        private bool useAuxFile()
+        {
+            return ((Configs.OverwriteAlbum && !Configs.ForceAlbum) || (Configs.OverwriteArtist && !Configs.ForceArtist) || (Configs.OverwriteTitle && !Configs.ForceTitle));
+        }
 
-        private void viewUpdate(bool isExtracting)
+        private void updateArtist(string artist)
+        {
+            File.Tag.AlbumArtists = null;
+            File.Tag.Performers = null;
+            File.Tag.AlbumArtists = new String[1] { artist };
+            File.Tag.Performers = new String[1] { artist };
+        }
+        private void viewUpdate(bool isExtracting, int max = 0)
         {
             ViewButtonCancel.Enabled = isExtracting;
             ViewButtonExtract.Enabled = !isExtracting;
             ViewButtonOptions.Enabled = !isExtracting;
             ViewPrBar.Visible = isExtracting;
+            ViewPrBar.Maximum = max;
+            ViewPrBar.Step = 1;
+            if (!isExtracting) ViewButtonExtract.Text = "Extract";
         }
         private string validChars(string str)
         {
@@ -197,6 +318,8 @@ namespace ClassLibrary
         private OsuDb Odb { get; set; }
         private CollectionDb Cdb { get; set; }
 
+        private Collection SelectedCollection { get; set; } 
+        private int PrBarMax { get; set; }
         private bool Cancel { get; set; }
         private string Mode { get; set; }
         private string ValidMode { get; set; }

@@ -18,23 +18,27 @@ namespace View
         public MainForm()
         {
             InitializeComponent();
+
             string[] spstring = Application.ExecutablePath.Split(new string[] { "\\View.exe" }, StringSplitOptions.None);
             AppPath = spstring[0];  //appPath
 
             Configs = new Configurations(AppPath); //Initialize configurations
             if (!Configs.getConfigurations())
             {
-                ConfigurationsForm configForm;
-
-                configForm = new ConfigurationsForm();
+                ConfigurationsForm configForm = new ConfigurationsForm();
                 configForm.ShowDialog();
+                if (configForm.ShouldClose) Environment.Exit(0);
+
                 while (!Configs.updateConfigurations(configForm.Cfg))
                 {
+                    configForm.Dispose();
+
                     configForm = new ConfigurationsForm(configForm.Cfg);
                     configForm.ShowDialog();
+                    if (configForm.ShouldClose) Environment.Exit(0);
                 }
             }
-
+            
             outputLabelData.Text = Configs.OutPath;
             osuLabelData.Text = Configs.OsuPath;
 
@@ -49,14 +53,17 @@ namespace View
         private void optionsButton_Click(object sender, EventArgs e)
         {
             string oldOsuPath = Configs.OsuPath;
+            
+            ConfigurationsForm configForm = new ConfigurationsForm(Configs.Cfg);
+            configForm.ShowDialog();
 
-            ConfigurationsForm configForm;
-            do
+            while (!Configs.updateConfigurations(configForm.Cfg))
             {
+                configForm.Dispose();
+
                 configForm = new ConfigurationsForm(Configs.Cfg);
                 configForm.ShowDialog();
             }
-            while (!Configs.updateConfigurations(configForm.Cfg));
 
             outputLabelData.Text = Configs.OutPath;
             osuLabelData.Text = Configs.OsuPath;
@@ -67,12 +74,10 @@ namespace View
                 updateComboBox(true);
             }
         }
-
         private void extractButton_Click(object sender, EventArgs e)
         {
             extractor.extract(SelectedCollection, Configs, Odb, Cdb);
         }
-
         private void cancelButton_Click(object sender, EventArgs e)
         {
             extractor.cancel();
@@ -80,6 +85,7 @@ namespace View
 
         private void modeComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
+            defaultComboboxLabel.Visible = false;
             SelectedCollection = modeComboBox.GetItemText(modeComboBox.SelectedItem);
             extractButton.Enabled = true;
         }
@@ -87,10 +93,10 @@ namespace View
         private void updateComboBox(bool reset)
         {
             readDatabase();
-            if (reset) modeComboBox.Items.Clear();
+            if (reset) { modeComboBox.Items.Clear(); defaultComboboxLabel.Visible = true; }
             modeComboBox.Items.Add("Complete library");
             foreach (Collection coll in Cdb.Collections)
-                modeComboBox.Items.Add(coll.Name);
+                if (coll.BeatmapHashes.Count != 0) modeComboBox.Items.Add(coll.Name); //Prevent empty collections from apearing in the combo box
         }
         private void readDatabase()
         {
