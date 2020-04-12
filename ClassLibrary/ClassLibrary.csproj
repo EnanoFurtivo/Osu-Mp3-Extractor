@@ -51,15 +51,29 @@
     <Compile Include="Configurations.cs" />
     <Compile Include="Extractor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\LIBRARIES\osu-database-reader-master\osu-database-reader-master\osu-database-reader\osu-database-reader.csproj">
-      <Project>{41df5448-1519-4ad9-8d26-cf8ec1a6469c}</Project>
+      <Project>{842b69ae-2344-4acd-a19a-85a5d8bb616b}</Project>
       <Name>osu-database-reader</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Defaultsongthumbnail.jpg" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

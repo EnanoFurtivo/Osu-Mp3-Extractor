@@ -9,6 +9,9 @@ using System.Windows.Forms;
 using System.IO;
 using osu_database_reader.BinaryFiles;
 using osu_database_reader.Components.Beatmaps;
+using osu_database_reader.TextFiles;
+using System.Drawing;
+using System.Drawing.Imaging;
 
 namespace ClassLibrary
 {
@@ -20,11 +23,6 @@ namespace ClassLibrary
             ViewButtonExtract = buttonExtract;
             ViewButtonCancel = buttonCancel;
             ViewPrBar = progressBar;
-
-            Pic = new TagLib.Picture();
-            Pic.Type = TagLib.PictureType.FrontCover;
-            Pic.Description = "Cover";
-            Pic.MimeType = System.Net.Mime.MediaTypeNames.Image.Jpeg;
 
             BackgroundWorker1 = new BackgroundWorker();
             BackgroundWorker1.DoWork += BackgroundWorker1_DoWork;
@@ -46,7 +44,17 @@ namespace ClassLibrary
             if (Odb.Beatmaps.Count != 0)
             {
                 Log = new List<string>();
-                
+
+                if (!System.IO.File.Exists(ImagePath))
+                {
+                    try
+                    {
+                        Properties.Resources.Defaultsongthumbnail.Save(ImagePath);
+                        PicDefault.Data = TagLib.ByteVector.FromPath(ImagePath);
+                    }
+                    catch (Exception) { ; }
+                }
+
                 try
                 {
                     Directory.CreateDirectory(Path.Combine(Configs.OutPath, ValidMode));
@@ -220,9 +228,64 @@ namespace ClassLibrary
                     
                     if (Configs.IncludeThumbnails)
                     {
-                        ; //ADD THUMBNAIL SUPPORT
+                        TagLib.Picture Pic = new TagLib.Picture();
+                        Pic.MimeType = System.Net.Mime.MediaTypeNames.Image.Jpeg;
+                        Pic.Description = "Cover";
+
+                        BeatmapFile beatmapFile = BeatmapFile.Read(Path.Combine(Configs.SongsPath, bmp.FolderName, bmp.BeatmapFileName), true);
+                        string imagePath;
+
+                        if (beatmapFile.BackgroundImageFile != null && System.IO.File.Exists(imagePath = Path.Combine(Configs.SongsPath, bmp.FolderName, beatmapFile.BackgroundImageFile)))
+                        {
+                            foreach (PictureType pType in Enum.GetValues(typeof(PictureType)))
+                            {
+                                Pic.Type = pType;
+                                Pic.Data = null;
+                            }
+
+                            try
+                            {
+                                Pic.Type = TagLib.PictureType.FrontCover;
+                                
+                                using (MemoryStream ms = new MemoryStream())
+                                {
+                                    string name = Path.GetFileNameWithoutExtension(imagePath);
+                                    //string path = Path.GetDirectoryName(imagePath);
+
+                                    Image png = Image.FromFile(imagePath);
+
+                                    string dou = File.MimeType;
+                                    string dea = File.Properties.Description;
+                                    string xd = File.Properties.Codecs.ToString();
+
+                                    png.Save(ms, ImageFormat.Jpeg);
+                                    ms.Position = 0;
+                                    png.Dispose();
+                                    
+                                    Pic.Data = TagLib.ByteVector.FromStream(ms);
+                                }
+                            }
+                            catch (Exception)
+                            {
+                                try
+                                {
+                                    Pic.Data = PicDefault.Data;
+                                }
+                                catch (Exception) { ; }
+                            }
+                        }
+                        else
+                        {
+                            try
+                            {
+                                Pic.Data = PicDefault.Data;
+                            }
+                            catch (Exception) {; }
+                        }
+
+                        File.Tag.Pictures = new TagLib.IPicture[] { Pic };
                     }
-                    
+
                     File.Save();
 
                     if (useAuxFile())
@@ -279,7 +342,7 @@ namespace ClassLibrary
         {
             return ((Configs.OverwriteAlbum && !Configs.ForceAlbum) || (Configs.OverwriteArtist && !Configs.ForceArtist) || (Configs.OverwriteTitle && !Configs.ForceTitle));
         }
-
+        
         private void updateArtist(string artist)
         {
             File.Tag.AlbumArtists = null;
@@ -318,6 +381,7 @@ namespace ClassLibrary
         private OsuDb Odb { get; set; }
         private CollectionDb Cdb { get; set; }
 
+        private string ImagePath { get; set; }
         private Collection SelectedCollection { get; set; } 
         private int PrBarMax { get; set; }
         private bool Cancel { get; set; }
@@ -326,7 +390,8 @@ namespace ClassLibrary
         private string OutputSubFolder { get; set; }
         private Configurations Configs { get; set; }
         private TagLib.File File { get; set; }
-        private TagLib.Picture Pic { get; set; }
+        //private TagLib.Picture Pic { get; set; }
+        private TagLib.Picture PicDefault { get; set; }
         private BackgroundWorker BackgroundWorker1 { get; set; }
 
         public List<string> Log { get; set; }

@@ -90,7 +90,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\LIBRARIES\osu-database-reader-master\osu-database-reader-master\osu-database-reader\osu-database-reader.csproj">
-      <Project>{41df5448-1519-4ad9-8d26-cf8ec1a6469c}</Project>
+      <Project>{842b69ae-2344-4acd-a19a-85a5d8bb616b}</Project>
       <Name>osu-database-reader</Name>
     </ProjectReference>
     <ProjectReference Include="..\ClassLibrary\ClassLibrary.csproj">

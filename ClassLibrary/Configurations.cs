@@ -183,7 +183,7 @@ namespace ClassLibrary
     
         //Private management
         private string CfgPath { get; set; }
-        private string AppPath { get; set; }
+        public string AppPath { get; set; }
 
         //Actual properties 
         public Dictionary<string, string> Cfg { get; set; }
