@@ -44,13 +44,13 @@ namespace View
             outLabel.Text = Cfg["output path"];
             osuLabel.Text = Cfg["osu! path"];
 
-            if (Cfg["include image"] == "false") includeThumbnailsCheckbox.Checked = false;
+            if (Cfg["include image"] == "false") includeThumbnailsCheckbox.Checked = false; else includeThumbnailsCheckbox.Checked = false;
             if (Cfg["overwrite album"] == "false") { overwriteAlbumCheckbox.Checked = false; forceAlbumCheckbox.Enabled = false; }
             if (Cfg["overwrite artist"] == "false") { overwriteArtistCheckbox.Checked = false; forceArtistCheckbox.Enabled = false; }
             if (Cfg["overwrite title"] == "false") { overwriteTitleCheckbox.Checked = false; forceTitleCheckbox.Enabled = false; }
-            if (Cfg["force album"] == "false") forceAlbumCheckbox.Checked = false;
-            if (Cfg["force artist"] == "false") forceArtistCheckbox.Checked = false;
-            if (Cfg["force title"] == "false") forceTitleCheckbox.Checked = false;
+            if (Cfg["force album"] == "false") forceAlbumCheckbox.Checked = false; else forceAlbumCheckbox.Checked = true;
+            if (Cfg["force artist"] == "false") forceArtistCheckbox.Checked = false; else forceArtistCheckbox.Checked = true;
+            if (Cfg["force title"] == "false") forceTitleCheckbox.Checked = false; else forceTitleCheckbox.Checked = true;
 
             ShouldClose = false;
         }
