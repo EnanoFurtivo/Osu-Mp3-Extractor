@@ -44,7 +44,7 @@ namespace View
             outLabel.Text = Cfg["output path"];
             osuLabel.Text = Cfg["osu! path"];
 
-            if (Cfg["include image"] == "false") includeThumbnailsCheckbox.Checked = false; else includeThumbnailsCheckbox.Checked = false;
+            if (Cfg["include image"] == "false") includeThumbnailsCheckbox.Checked = false; else includeThumbnailsCheckbox.Checked = true;
             if (Cfg["overwrite album"] == "false") { overwriteAlbumCheckbox.Checked = false; forceAlbumCheckbox.Enabled = false; }
             if (Cfg["overwrite artist"] == "false") { overwriteArtistCheckbox.Checked = false; forceArtistCheckbox.Enabled = false; }
             if (Cfg["overwrite title"] == "false") { overwriteTitleCheckbox.Checked = false; forceTitleCheckbox.Enabled = false; }
