@@ -78,20 +78,16 @@ namespace View
             }
 
 
-            if (Cfg["force image"] == "false")
-                forceThumbnailsCheckbox.Checked = false;
+            if (Cfg["force image"] == "false") forceThumbnailsCheckbox.Checked = false;
             else forceThumbnailsCheckbox.Checked = false;
 
-            if (Cfg["force album"] == "false")
-                forceAlbumCheckbox.Checked = false;
+            if (Cfg["force album"] == "false") forceAlbumCheckbox.Checked = false;
             else forceAlbumCheckbox.Checked = true;
 
-            if (Cfg["force artist"] == "false")
-                forceArtistCheckbox.Checked = false;
+            if (Cfg["force artist"] == "false") forceArtistCheckbox.Checked = false;
             else forceArtistCheckbox.Checked = true;
 
-            if (Cfg["force title"] == "false")
-                forceTitleCheckbox.Checked = false;
+            if (Cfg["force title"] == "false") forceTitleCheckbox.Checked = false;
             else forceTitleCheckbox.Checked = true;
 
             ShouldClose = false;

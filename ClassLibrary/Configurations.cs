@@ -22,11 +22,12 @@ namespace ClassLibrary
                 {"output path", string.Empty},
                 {"osu! path", string.Empty},
                 {"include image", string.Empty},
+                {"force image", string.Empty},
                 {"overwrite album", string.Empty},
-                {"overwrite artist", string.Empty},
-                {"overwrite title", string.Empty},
                 {"force album", string.Empty},
+                {"overwrite artist", string.Empty},
                 {"force artist", string.Empty},
+                {"overwrite title", string.Empty},
                 {"force title", string.Empty}
             };
         }
