@@ -79,7 +79,7 @@ namespace View
 
 
             if (Cfg["force image"] == "false") forceThumbnailsCheckbox.Checked = false;
-            else forceThumbnailsCheckbox.Checked = false;
+            else forceThumbnailsCheckbox.Checked = true;
 
             if (Cfg["force album"] == "false") forceAlbumCheckbox.Checked = false;
             else forceAlbumCheckbox.Checked = true;

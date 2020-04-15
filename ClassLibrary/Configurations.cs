@@ -16,6 +16,7 @@ namespace ClassLibrary
             AppPath = appPathIn; //generate useful stuff for later
             CfgPath = Path.Combine(AppPath, "Config.ini");
             LogPath = Path.Combine(AppPath, "Log.txt");
+            ImgPath = Path.Combine(AppPath, "defaultimage.jpg");
 
             Cfg = new Dictionary<string, string>() //Generate default settings dictionary
             {
@@ -175,6 +176,7 @@ namespace ClassLibrary
             if (Cfg["force album"] == "true") ForceAlbum = true; else ForceAlbum = false;
             if (Cfg["force artist"] == "true") ForceArtist = true; else ForceArtist = false;
             if (Cfg["force title"] == "true") ForceTitle = true; else ForceTitle = false;
+            if (Cfg["force image"] == "true") ForceImage = true; else ForceImage = false;
 
             OutPath = Cfg["output path"];
             OsuPath = Cfg["osu! path"];
@@ -195,6 +197,7 @@ namespace ClassLibrary
         public string SongsPath { get; set; }
         public string OsuPath { get; set; }
         public string OutPath { get; set; }
+        public string ImgPath { get; set; }
 
         public bool IncludeThumbnails { get; set; }
         public bool OverwriteAlbum { get; set; }
@@ -203,5 +206,6 @@ namespace ClassLibrary
         public bool ForceAlbum { get; set; }
         public bool ForceArtist { get; set; }
         public bool ForceTitle { get; set; }
+        public bool ForceImage { get; set; }
     }
 }
