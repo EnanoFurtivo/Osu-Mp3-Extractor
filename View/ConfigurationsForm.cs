@@ -25,11 +25,12 @@ namespace View
             };
 
             Cfg["include image"] = includeThumbnailsCheckbox.Checked.ToString().ToLower();
+            Cfg["force image"] = forceThumbnailsCheckbox.Checked.ToString().ToLower();
             Cfg["overwrite album"] = overwriteAlbumCheckbox.Checked.ToString().ToLower();
-            Cfg["overwrite artist"] = overwriteArtistCheckbox.Checked.ToString().ToLower();
-            Cfg["overwrite title"] = overwriteTitleCheckbox.Checked.ToString().ToLower();
             Cfg["force album"] = forceAlbumCheckbox.Checked.ToString().ToLower();
+            Cfg["overwrite artist"] = overwriteArtistCheckbox.Checked.ToString().ToLower();
             Cfg["force artist"] = forceArtistCheckbox.Checked.ToString().ToLower();
+            Cfg["overwrite title"] = overwriteTitleCheckbox.Checked.ToString().ToLower();
             Cfg["force title"] = forceTitleCheckbox.Checked.ToString().ToLower();
 
             ShouldClose = true;
@@ -44,13 +45,54 @@ namespace View
             outLabel.Text = Cfg["output path"];
             osuLabel.Text = Cfg["osu! path"];
 
-            if (Cfg["include image"] == "false") includeThumbnailsCheckbox.Checked = false; else includeThumbnailsCheckbox.Checked = true;
-            if (Cfg["overwrite album"] == "false") { overwriteAlbumCheckbox.Checked = false; forceAlbumCheckbox.Enabled = false; }
-            if (Cfg["overwrite artist"] == "false") { overwriteArtistCheckbox.Checked = false; forceArtistCheckbox.Enabled = false; }
-            if (Cfg["overwrite title"] == "false") { overwriteTitleCheckbox.Checked = false; forceTitleCheckbox.Enabled = false; }
-            if (Cfg["force album"] == "false") forceAlbumCheckbox.Checked = false; else forceAlbumCheckbox.Checked = true;
-            if (Cfg["force artist"] == "false") forceArtistCheckbox.Checked = false; else forceArtistCheckbox.Checked = true;
-            if (Cfg["force title"] == "false") forceTitleCheckbox.Checked = false; else forceTitleCheckbox.Checked = true;
+            if (Cfg["include image"] == "false") {
+                includeThumbnailsCheckbox.Checked = false;
+                forceThumbnailsCheckbox.Enabled = false;
+            } else {
+                includeThumbnailsCheckbox.Checked = true;
+                forceThumbnailsCheckbox.Enabled = true;
+            }
+
+            if (Cfg["overwrite album"] == "false") {
+                overwriteAlbumCheckbox.Checked = false;
+                forceAlbumCheckbox.Enabled = false;
+            } else {
+                overwriteAlbumCheckbox.Checked = true;
+                forceAlbumCheckbox.Enabled = true;
+            }
+
+            if (Cfg["overwrite artist"] == "false") {
+                overwriteArtistCheckbox.Checked = false;
+                forceArtistCheckbox.Enabled = false;
+            } else {
+                overwriteArtistCheckbox.Checked = true;
+                forceArtistCheckbox.Enabled = true;
+            }
+
+            if (Cfg["overwrite title"] == "false") {
+                overwriteTitleCheckbox.Checked = false;
+                forceTitleCheckbox.Enabled = false;
+            } else {
+                overwriteTitleCheckbox.Checked = true;
+                forceTitleCheckbox.Enabled = true;
+            }
+
+
+            if (Cfg["force image"] == "false")
+                forceThumbnailsCheckbox.Checked = false;
+            else forceThumbnailsCheckbox.Checked = false;
+
+            if (Cfg["force album"] == "false")
+                forceAlbumCheckbox.Checked = false;
+            else forceAlbumCheckbox.Checked = true;
+
+            if (Cfg["force artist"] == "false")
+                forceArtistCheckbox.Checked = false;
+            else forceArtistCheckbox.Checked = true;
+
+            if (Cfg["force title"] == "false")
+                forceTitleCheckbox.Checked = false;
+            else forceTitleCheckbox.Checked = true;
 
             ShouldClose = false;
         }
@@ -59,6 +101,12 @@ namespace View
         private void includeThumbnailsCheckbox_CheckedChanged(object sender, EventArgs e)
         {
             Cfg["include image"] = includeThumbnailsCheckbox.Checked.ToString().ToLower();
+            if (includeThumbnailsCheckbox.Checked) forceThumbnailsCheckbox.Enabled = true;
+            else forceThumbnailsCheckbox.Enabled = false;
+        }
+        private void forceThumbnailsCheckbox_CheckedChanged(object sender, EventArgs e)
+        {
+            Cfg["force image"] = forceThumbnailsCheckbox.Checked.ToString().ToLower();
         }
         private void overwriteAlbumCheckbox_CheckedChanged(object sender, EventArgs e)
         {
@@ -66,11 +114,19 @@ namespace View
             if (overwriteAlbumCheckbox.Checked) forceAlbumCheckbox.Enabled = true;
             else forceAlbumCheckbox.Enabled = false;
         }
+        private void forceAlbumCheckbox_CheckedChanged(object sender, EventArgs e)
+        {
+            Cfg["force album"] = forceAlbumCheckbox.Checked.ToString().ToLower();
+        }
         private void overwriteArtistCheckbox_CheckedChanged(object sender, EventArgs e)
         {
             Cfg["overwrite artist"] = overwriteArtistCheckbox.Checked.ToString().ToLower();
             if (overwriteArtistCheckbox.Checked) forceArtistCheckbox.Enabled = true;
             else forceArtistCheckbox.Enabled = false;
+        }
+        private void forceArtistCheckbox_CheckedChanged(object sender, EventArgs e)
+        {
+            Cfg["force artist"] = forceArtistCheckbox.Checked.ToString().ToLower();
         }
         private void overwriteTitleCheckbox_CheckedChanged(object sender, EventArgs e)
         {
@@ -78,19 +134,11 @@ namespace View
             if (overwriteTitleCheckbox.Checked) forceTitleCheckbox.Enabled = true;
             else forceTitleCheckbox.Enabled = false;
         }
-        private void forceAlbumCheckbox_CheckedChanged(object sender, EventArgs e)
-        {
-            Cfg["force album"] = forceAlbumCheckbox.Checked.ToString().ToLower();
-        }
-        private void forceArtistCheckbox_CheckedChanged(object sender, EventArgs e)
-        {
-            Cfg["force artist"] = forceArtistCheckbox.Checked.ToString().ToLower();
-        }
         private void forceTitleCheckbox_CheckedChanged(object sender, EventArgs e)
         {
             Cfg["force title"] = forceTitleCheckbox.Checked.ToString().ToLower();
         }
-        
+
         //buttons
         private void outBrowseButton_Click(object sender, EventArgs e)
         {

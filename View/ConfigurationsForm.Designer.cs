@@ -43,6 +43,7 @@
             this.forceTitleCheckbox = new System.Windows.Forms.CheckBox();
             this.outLabel = new System.Windows.Forms.Label();
             this.osuLabel = new System.Windows.Forms.Label();
+            this.forceThumbnailsCheckbox = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // osuBrowseButton
@@ -233,6 +234,19 @@
             this.osuLabel.Text = "C:\\...\\osu!";
             this.osuLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
+            // forceThumbnailsCheckbox
+            // 
+            this.forceThumbnailsCheckbox.AutoSize = true;
+            this.forceThumbnailsCheckbox.BackColor = System.Drawing.Color.Transparent;
+            this.forceThumbnailsCheckbox.ForeColor = System.Drawing.SystemColors.Control;
+            this.forceThumbnailsCheckbox.Location = new System.Drawing.Point(7, 83);
+            this.forceThumbnailsCheckbox.Name = "forceThumbnailsCheckbox";
+            this.forceThumbnailsCheckbox.Size = new System.Drawing.Size(110, 17);
+            this.forceThumbnailsCheckbox.TabIndex = 16;
+            this.forceThumbnailsCheckbox.Text = "Force Thumbnails";
+            this.forceThumbnailsCheckbox.UseVisualStyleBackColor = false;
+            this.forceThumbnailsCheckbox.CheckedChanged += new System.EventHandler(this.forceThumbnailsCheckbox_CheckedChanged);
+            // 
             // ConfigurationsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -240,6 +254,7 @@
             this.BackgroundImage = global::View.Properties.Resources.Defaultsongthumbnaildim;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
             this.ClientSize = new System.Drawing.Size(496, 105);
+            this.Controls.Add(this.forceThumbnailsCheckbox);
             this.Controls.Add(this.osuLabel);
             this.Controls.Add(this.outLabel);
             this.Controls.Add(this.forceTitleCheckbox);
@@ -280,5 +295,6 @@
         private System.Windows.Forms.CheckBox forceTitleCheckbox;
         private System.Windows.Forms.Label outLabel;
         private System.Windows.Forms.Label osuLabel;
+        private System.Windows.Forms.CheckBox forceThumbnailsCheckbox;
     }
 }
