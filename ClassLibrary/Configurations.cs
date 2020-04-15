@@ -15,6 +15,7 @@ namespace ClassLibrary
         {
             AppPath = appPathIn; //generate useful stuff for later
             CfgPath = Path.Combine(AppPath, "Config.ini");
+            LogPath = Path.Combine(AppPath, "Log.txt");
 
             Cfg = new Dictionary<string, string>() //Generate default settings dictionary
             {
@@ -184,6 +185,7 @@ namespace ClassLibrary
         //Private management
         private string CfgPath { get; set; }
         public string AppPath { get; set; }
+        public string LogPath{ get; set; }
 
         //Actual properties 
         public Dictionary<string, string> Cfg { get; set; }

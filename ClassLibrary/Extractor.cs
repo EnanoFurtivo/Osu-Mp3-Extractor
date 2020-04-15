@@ -170,6 +170,11 @@ namespace ClassLibrary
         private void BackgroundWorker1_RunWorkerCompleted(object sender, System.ComponentModel.RunWorkerCompletedEventArgs e)
         {
             viewUpdate(false);
+
+            if (System.IO.File.Exists(Configs.LogPath)) System.IO.File.Delete(Configs.LogPath); //delete previous file for overwriting
+            using (StreamWriter sw = new StreamWriter(Configs.LogPath)) //Create txt to writ to
+                foreach (string item in Log) 
+                    sw.WriteLine(item); //write each line individually
         }
 
         private void extractBeatmap(BeatmapEntry bmp)
@@ -235,28 +240,21 @@ namespace ClassLibrary
                         BeatmapFile beatmapFile = BeatmapFile.Read(Path.Combine(Configs.SongsPath, bmp.FolderName, bmp.BeatmapFileName), true);
                         string imagePath;
 
+                        foreach (PictureType pType in Enum.GetValues(typeof(PictureType)))
+                        {
+                            Pic.Type = pType;
+                            Pic.Data = null;
+                        }
+
                         if (beatmapFile.BackgroundImageFile != null && System.IO.File.Exists(imagePath = Path.Combine(Configs.SongsPath, bmp.FolderName, beatmapFile.BackgroundImageFile)))
                         {
-                            foreach (PictureType pType in Enum.GetValues(typeof(PictureType)))
-                            {
-                                Pic.Type = pType;
-                                Pic.Data = null;
-                            }
+                            Pic.Type = TagLib.PictureType.FrontCover;
 
                             try
                             {
-                                Pic.Type = TagLib.PictureType.FrontCover;
-                                
                                 using (MemoryStream ms = new MemoryStream())
                                 {
-                                    string name = Path.GetFileNameWithoutExtension(imagePath);
-                                    //string path = Path.GetDirectoryName(imagePath);
-
                                     Image png = Image.FromFile(imagePath);
-
-                                    string dou = File.MimeType;
-                                    string dea = File.Properties.Description;
-                                    string xd = File.Properties.Codecs.ToString();
 
                                     png.Save(ms, ImageFormat.Jpeg);
                                     ms.Position = 0;
@@ -267,21 +265,11 @@ namespace ClassLibrary
                             }
                             catch (Exception)
                             {
-                                try
-                                {
-                                    Pic.Data = PicDefault.Data;
-                                }
-                                catch (Exception) { ; }
+                                Pic.Data = PicDefault.Data;
                             }
                         }
                         else
-                        {
-                            try
-                            {
-                                Pic.Data = PicDefault.Data;
-                            }
-                            catch (Exception) {; }
-                        }
+                            Pic.Data = PicDefault.Data;
 
                         File.Tag.Pictures = new TagLib.IPicture[] { Pic };
                     }

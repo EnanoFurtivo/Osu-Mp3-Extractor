@@ -19,7 +19,7 @@ namespace View
         {
             InitializeComponent();
 
-            string[] spstring = Application.ExecutablePath.Split(new string[] { "\\View.exe" }, StringSplitOptions.None);
+            string[] spstring = Application.ExecutablePath.Split(new string[] { "\\osu! mp3 extractor.exe" }, StringSplitOptions.None);
             AppPath = spstring[0];  //appPath
 
             Configs = new Configurations(AppPath); //Initialize configurations
